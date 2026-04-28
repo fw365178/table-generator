@@ -1333,14 +1333,14 @@
 
     // offsetWidth 包含 border，是正確的總寬度
     const naturalWidth = wrap.offsetWidth;
-    // 給 wrap 明確寬度，讓內部 width:100% 有正確參照
     wrap.style.width = naturalWidth + 'px';
     tempDiv.style.width = naturalWidth + 'px';
     tempDiv.style.whiteSpace = '';
 
-    // 讓每張表格都撐滿最大寬度，避免較窄的表格右邊留空
+    // 直接用像素值強制每張表格等寬，避免百分比解析不穩定
     wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width = '100%';
+      t.style.width = naturalWidth + 'px';
+      t.style.minWidth = naturalWidth + 'px';
     });
 
     html2canvas(tempDiv, {
