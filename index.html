@@ -1267,15 +1267,15 @@
     container.querySelectorAll('textarea').forEach(ta => { ta.defaultValue = ta.value; });
 
     const wrap = document.createElement('div');
-    wrap.style.cssText = `display:block;width:${liveTableWidth}px;overflow:hidden;`;
+    wrap.style.cssText = `display:block;width:${liveTableWidth}px;`;
     container.querySelectorAll('.table-custom').forEach(t => wrap.appendChild(t.cloneNode(true)));
 
     tempDiv.appendChild(wrap);
 
     // 所有表格等寬填滿 wrap
     wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width       = '100%';
-      t.style.tableLayout = 'auto';
+      t.style.width       = liveTableWidth + 'px';
+      t.style.tableLayout = 'fixed';
       t.style.border      = 'none';
       t.style.marginBottom = '0';
     });
@@ -1298,8 +1298,10 @@
       span.style.textShadow = computed.textShadow;
       span.style.letterSpacing = computed.letterSpacing;
       span.style.textTransform = computed.textTransform;
-      span.style.whiteSpace = 'pre';
+      span.style.whiteSpace = 'pre-wrap';
       span.style.display    = 'inline-block';
+      span.style.width      = '100%';
+      span.style.textAlign  = 'center';
       span.textContent = input.value;
 
       if (input.classList.contains('highlight-input') || (!isNaN(gi) && highlightCells[hlKey])) {
@@ -1318,14 +1320,9 @@
     // 強制每格樣式
     tempDiv.querySelectorAll('td, th').forEach(cell => {
       cell.style.padding    = '8px 12px';
-      cell.style.whiteSpace = 'pre';
-    });
-
-    // 量出每格文字自然寬度
-    const extraPad = 10;
-    tempDiv.querySelectorAll('td, th').forEach(cell => {
-      const contentW = cell.scrollWidth;
-      cell.style.minWidth = (contentW + extraPad) + 'px';
+      cell.style.whiteSpace = 'pre-wrap';
+      cell.style.overflow   = 'hidden';
+      cell.style.wordBreak  = 'break-word';
     });
 
     // 移除空 td
