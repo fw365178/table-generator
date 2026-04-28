@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Table Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Noto+Sans+Devanagari:wght@400;700;900&family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Roboto', 'Noto Sans Devanagari', 'Noto Sans Bengali', Arial, sans-serif;
+      margin: 0; padding: 5px;
+      min-height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      color: #fff;
+      /* ── CSS Variables (default: blue/Nepali) ── */
+      --c-bg:         #3531a8;
+      --c-border:     #3531a8;
+      --c-outline:    #3531a8;
+      --c-border2:    #3531a8;
+      --c-hdr-bg:     #201540;
+      --c-hdr-fg:     #fa932b;   /* 藍色版：橘色標題文字 */
+      --c-cell-fg:    #1e163f;
+      --c-hl-color:   #ffa312;
+      --c-hl-shadow:  #211d42;
+      --c-btn:        #3531a8;
+      --c-accent:     #3531a8;
+      --c-row-bg:     #eceaff;   /* 藍色版：淡藍底色 */
+      background: var(--c-bg);
+      transition: background 0.3s;
+    }
+
+    /* ── THEME: GREEN (Bengali) ── */
+    body.theme-green {
+      --c-bg:         #22a085;
+      --c-border:     #1a8a71;
+      --c-outline:    #22a085;
+      --c-border2:    #199b75;
+      --c-hdr-bg:     #146d4f;
+      --c-hdr-fg:     #062818;   /* 綠色版：深綠標題文字 */
+      --c-cell-fg:    #002714;
+      --c-hl-color:   #ffd600;   /* 綠色版：黃色 highlight */
+      --c-hl-shadow:  #012e1a;   /* 綠色版：深綠陰影 */
+      --c-btn:        #22a085;
+      --c-accent:     #146d4f;
+      --c-row-bg:     #d6f5ec;   /* 綠色版：淡綠底色 */
+    }
+
+    /* ── THEME: PINK (Tagalog) ── */
+    body.theme-pink {
+      --c-bg:         #fdb8e3;
+      --c-border:     #fa9dd7;
+      --c-outline:    #fdb8e3;
+      --c-border2:    #fa9dd7;
+      --c-hdr-bg:     #f246ff;
+      --c-hdr-fg:     #1e163f;   /* 粉色版：深色標題文字 */
+      --c-cell-fg:    #1e163f;
+      --c-hl-color:   #ffa312;   /* 粉色版：橘色 highlight */
+      --c-hl-shadow:  #211d42;   /* 粉色版：深紫陰影 */
+      --c-btn:        #fdb8e3;
+      --c-accent:     #f246ff;
+      --c-row-bg:     #ffe0f5;   /* 粉色版：淡粉底色 */
+    }
+
+    h1 {
+      text-align: center;
+      margin: 3px 0 6px;
+      font-weight: 900; letter-spacing: 2px; font-size: 20px;
+    }
+
+    /* ── Top bar ── */
+    #top-bar {
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+      margin: 2px auto 4px; width: 96%; max-width: 1200px;
+    }
+    .lang-btn {
+      padding: 5px 16px; font-size: 13px; font-weight: 900;
+      border-radius: 22px; border: none; cursor: pointer;
+      transition: all 0.25s; font-family: inherit;
+    }
+
+    /* ── Preview area ── */
+    #preview-area {
+      background: #fff; padding: 15px; border-radius: 12px;
+      margin: 3px auto; width: 96%; max-width: 1200px;
+      flex: 1; overflow: auto;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      border: 4px solid var(--c-border);
+      outline: 4px solid var(--c-outline);
+      transition: border-color 0.3s, outline-color 0.3s;
+    }
+
+    /* ── Table ── */
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Roboto', Arial, sans-serif;
+      border: none;
+      margin-bottom: 10px !important;
+      transition: border-color 0.3s;
+    }
+    .table-custom th, .table-custom td {
+      border: 4px solid var(--c-border2);
+      padding: 8px 1em;
+      white-space: pre-wrap;
+      text-align: center;
+      color: var(--c-cell-fg);
+      font-size: 1.2em;
+      font-weight: bold;
+      vertical-align: middle;
+      background-color: #fff;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .table-custom th {
+      color: var(--c-cell-fg);
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      height: 20px;
+    }
+    .table-custom .group-header {
+      background: var(--c-hdr-bg) !important;
+      color: var(--c-hdr-fg) !important;
+      font-size: 1.5em;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;
+      height: 30px;
+      text-transform: uppercase;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* highlight：顏色與陰影因主題不同 */
+    .table-custom .highlight,
+    .highlight-input {
+      color: var(--c-hl-color) !important;
+      font-weight: 900 !important;
+      font-size: 1.2em !important;
+      text-shadow:
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow),
+        0px 0px 4px var(--c-hl-shadow), 0px 0px 4px var(--c-hl-shadow) !important;
+    }
+
+    .table-custom tr:not(:last-child) td { border-bottom: 4px solid var(--c-border2); }
+
+    /* ── Buttons ── */
+    button {
+      font-family: 'Roboto', Arial, sans-serif;
+      font-weight: 700;
+      background: var(--c-btn);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      margin: 2px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #188c6c; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── All inputs & textareas ── */
+    input[type="text"],
+    input[type="number"],
+    input,
+    textarea {
+      font-family: 'Roboto', Arial, sans-serif;
+      font-size: 1em;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      padding: 2px 6px;
+      margin: 0;
+      background: transparent;
+      color: inherit;
+      min-width: 0;
+      text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff;
+    }
+    /* textarea 專屬 */
+    .table-custom td textarea {
+      resize: none;
+      overflow: hidden;
+      display: block;
+      line-height: 1.4;
+      white-space: pre;
+    }
+    input:focus, textarea:focus {
+      outline: 1px dashed #aaa;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* 資料格 input / textarea */
+    .table-custom td input,
+    .table-custom td textarea {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: var(--c-cell-fg);
+    }
+    /* 資料格 highlight input / textarea */
+    .table-custom td input.highlight-input,
+    .table-custom td textarea.highlight-input {
+      color: var(--c-hl-color) !important;
+      font-weight: 900 !important;
+      text-shadow:
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow), 0px 0px 3px var(--c-hl-shadow),
+        0px 0px 3px var(--c-hl-shadow) !important;
+    }
+
+    /* span-panel input：覆蓋白字陰影，改為普通黑字 */
+    .span-panel input[type=number],
+    .span-panel input {
+      text-shadow: none !important;
+      min-width: unset !important;
+      color: #222 !important;
+      background: #fff !important;
+    }
+
+    /* ── Cell action mini buttons ── */
+    .table-custom td > div, .table-custom th > div {
+      display: flex; justify-content: center; gap: 2px; margin-top: 2px;
+    }
+    .table-custom td > div button, .table-custom th > div button {
+      font-size: 9px !important; padding: 0 4px !important; margin: 0 !important;
+      line-height: 15px !important; border-radius: 2px !important;
+      opacity: 0.75; transition: opacity 0.15s;
+    }
+    .table-custom td > div button:hover, .table-custom th > div button:hover { opacity: 1; }
+
+    /* ── Delete-row helper cell: no border, zero footprint in table layout ── */
+    .table-custom td.del-row-td {
+      border: none !important;
+      background: transparent !important;
+      width: 1px;
+      min-width: 0;
+      padding: 0;
+      overflow: visible;
+      white-space: nowrap;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { height: 6px; width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background-color: var(--c-btn); border-radius: 10px; }
+
+    /* ── RWD ── */
+    @media (max-width: 768px) {
+      body { padding: 2px; max-height: none; overflow: auto; }
+      #preview-area { width: 98%; padding: 5px; }
+      h1 { font-size: 18px; }
+      .languages-container { flex-direction: column !important; gap: 10px !important; }
+      .table-language-container { width: 100% !important; margin-bottom: 20px; }
+      .mobile-friendly-btn { padding: 8px !important; min-height: 36px; }
+      td, th { padding: 6px 4px !important; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Table Generator</h1>
+  <div id="top-bar"></div>
+  <div id="controls"></div>
+  <div id="preview-area"></div>
+  <button id="download-btn" style="display:none;">Download</button>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+  // ══════════════════════════════════════════════════════════
+  //  LANGUAGE / THEME CONFIG
+  //  Language determines theme: nepali=blue, bengali=green, tagalog=pink
+  // ══════════════════════════════════════════════════════════
+  const LANG_CONFIG = {
+    nepali: {
+      label: '🇳🇵 Nepali',
+      theme: 'blue',
+      themeClass: '',          // default (blue)
+      accentColor: '#3531a8',
+      activeBg: '#3531a8',
+      activeColor: '#fff',
+      inactiveBg: 'rgba(255,255,255,0.18)',
+      inactiveColor: 'rgba(255,255,255,0.9)',
+      downloadBg: '#3531a8',
+      h3Color: '#3531a8',
+      secondLabel: 'Nepali Version',
+    },
+    bengali: {
+      label: '🇧🇩 Bengali',
+      theme: 'green',
+      themeClass: 'theme-green',
+      accentColor: '#146d4f',
+      activeBg: '#146d4f',
+      activeColor: '#fff',
+      inactiveBg: 'rgba(255,255,255,0.18)',
+      inactiveColor: 'rgba(255,255,255,0.9)',
+      downloadBg: '#199b75',
+      h3Color: '#22a085',
+      secondLabel: 'Bengali Version',
+    },
+    tagalog: {
+      label: '🇵🇭 Tagalog',
+      theme: 'pink',
+      themeClass: 'theme-pink',
+      accentColor: '#f246ff',
+      activeBg: '#f246ff',
+      activeColor: '#fff',
+      inactiveBg: 'rgba(255,255,255,0.25)',
+      inactiveColor: 'rgba(200,60,180,0.85)',
+      downloadBg: '#fa9dd7',
+      h3Color: '#fdb8e3',
+      secondLabel: 'Tagalog Version',
+    }
+  };
+
+  let currentLang = 'nepali';
+  let rowBgEnabled = false;  // 資料列底色開關（保留，未來可用）
+  // ── cellBgData: key="{gi}-{ri}-{ci}", true = 格子套標題欄底色 ──
+  let cellBgData = {};
+
+  // ══════════════════════════════════════════════════════════
+  //  TRANSLATION MAPS
+  // ══════════════════════════════════════════════════════════
+  const TRANSLATIONS = {
+    nepali: {
+      "PROMOTION":"प्रमोशन","GAME TYPES":"खेल प्रकार","GAME":"खेल",
+      "REPETITIONS":"पुनरावृत्ति","BONUS %":"बोनस %","BONUS":"बोनस",
+      "MAX BONUS":"अधिकतम बोनस","UNLIMITED":"असीमित","TURNOVER":"कारोबार",
+      "MIN DEPOSIT":"न्यूनतम जम्मा","MAX WITHDRAWAL":"अधिकतम निकासी",
+      "AMOUNT VOLUME %":"रकम भोल्युम %","ONE-TIME ONLY":"एक पटक मात्र",
+      "ONE-TIME":"एक पटक","DAILY":"दैनिक","ALL GAMES":"सबै खेलहरू",
+      "LIVE CASINO":"जीवित क्यासिनो","SLOT":"स्लट","CRASH GAME":"क्र्यास खेल",
+      "FISHING":"फिसिङ","ESPORT":"ई-स्पोर्ट","CARD GAME":"कार्ड खेलहरू",
+      "SPORTS":"खेलकुद","LOTTERY":"लटरी","COCKFIGHT":"कुखुरा जुधाइ",
+      "SLOT & FISHING":"स्लट र फिसिङ","AMOUNT":"रकम",
+      "1X":"१X","100%":"१००%","5%":"५%","8%":"८%","12%":"१२%",
+      "100 PHP":"रु१००","500 PHP":"रु५००","1000 PHP":"रु१,०००",
+      "रु100":"रु१००","रु500":"रु५००","रु1,000":"रु१,०००",
+      "&":"र"
+    },
+    bengali: {
+      "PROMOTION":"প্রচার","GAME TYPES":"গেমের ধরন","GAME":"গেম",
+      "REPETITIONS":"পুনরাবৃত্তি","BONUS %":"বোনাস %","BONUS":"বোনাস",
+      "MAX BONUS":"সর্বোচ্চ বোনাস","UNLIMITED":"অসীম","TURNOVER":"টার্নওভার",
+      "MIN DEPOSIT":"সর্বনিম্ন জমা","MAX WITHDRAWAL":"সর্বোচ্চ উত্তোলন",
+      "AMOUNT VOLUME %":"পরিমাণ ভলিউম %","ONE-TIME ONLY":"শুধুমাত্র একবার",
+      "ONE-TIME":"একবার","DAILY":"দৈনিক","ALL GAMES":"সমস্ত গেম",
+      "LIVE CASINO":"লাইভ ক্যাসিনো","SLOT":"স্লট","FISHING":"মাছ ধরা",
+      "SPORTS":"খেলাধুলা","LOTTERY":"লটারি","COCKFIGHT":"মোরগ লড়াই",
+      "SLOT & FISHING":"স্লট এবং মাছ ধরা","AMOUNT":"পরিমাণ",
+      "1X":"১X","100%":"১০০%","5%":"৫%","8%":"৮%","12%":"১২%",
+      "100 PHP":"৳১০০","500 PHP":"৳৫০০","1000 PHP":"৳১০০০",
+      "রু100":"৳১০০","রু500":"৳৫০০","রু1,000":"৳১০০০",
+      "रु100":"৳১০০","रु500":"৳৫০০","रु1,000":"৳১০০০",
+    },
+    tagalog: {
+      "PROMOTION":"PROMOSYON","GAME TYPES":"URI NG MGA LARO","GAME":"LARO",
+      "REPETITIONS":"PAG-UULIT","BONUS %":"BONUS %","BONUS":"BONUS",
+      "MAX BONUS":"MAXIMUM NA BONUS","UNLIMITED":"WALANG LIMIT","TURNOVER":"TURNOVER",
+      "MIN DEPOSIT":"MINIMUM NA DEPOSITO","MAX WITHDRAWAL":"MAXIMUM NA PWEDENG I-WITHDRAW",
+      "AMOUNT VOLUME %":"HALAGA AT VOLUME %","ONE-TIME ONLY":"ISANG BESES LAMANG",
+      "ONE-TIME":"ISANG BESES","DAILY":"ARAW-ARAW","ALL GAMES":"LAHAT NG LARO",
+      "LIVE CASINO":"LIVE CASINO","SLOT":"SLOT","FISHING":"PANGINGISDA",
+      "SPORTS":"PALAKASAN","LOTTERY":"LOTTERY","COCKFIGHT":"SABONG",
+      "SLOT & FISHING":"SLOT AT PANGINGISDA","AMOUNT":"HALAGA",
+      "1X":"1X","100%":"100%","5%":"5%","8%":"8%","12%":"12%",
+      "100 PHP":"100 PHP","500 PHP":"500 PHP","1000 PHP":"1000 PHP",
+      "रु100":"100 PHP","रु500":"500 PHP","रु1,000":"1000 PHP",
+    }
+  };
+
+  const DIGIT_MAP = {
+    nepali:  ['०','१','२','३','४','५','६','७','८','९'],
+    bengali: ['০','১','২','৩','৪','৫','৬','৭','৮','৯'],
+  };
+
+  function convertDigits(text, lang) {
+    const d = DIGIT_MAP[lang];
+    if (!d) return text;
+    return String(text).replace(/[0-9]/g, n => d[parseInt(n)]);
+  }
+
+  // ── 格式化純數字字串加千分位 ──
+  // style='western': 1000000 → 1,000,000
+  // style='indian':  1000000 → 10,00,000 (最後3位一組，之後每2位)
+  function formatNumberStr(numStr, style) {
+    const clean = String(numStr).replace(/,/g, '');
+    if (!/^\d+$/.test(clean)) return numStr;
+    if (clean.length <= 3) return clean;
+    if (style === 'indian') {
+      let result = clean.slice(clean.length - 3);
+      let rem = clean.slice(0, clean.length - 3);
+      while (rem.length > 2) {
+        result = rem.slice(rem.length - 2) + ',' + result;
+        rem = rem.slice(0, rem.length - 2);
+      }
+      if (rem.length > 0) result = rem + ',' + result;
+      return result;
+    }
+    // western
+    return clean.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // ── 存回 tableData 前，對 रु 貨幣值套用西式千分位 ──
+  function applyThousandSep(rawValue) {
+    return String(rawValue).replace(/^(रु)([\d,]+)$/, (_, sym, num) => {
+      return sym + formatNumberStr(num, 'western');
+    });
+  }
+
+  // ── 英文顯示值加千分位（西式）──
+  function applyThousandSepDisplay(displayValue) {
+    let m = String(displayValue).match(/^([^\d,\s]+)([\d,]+)(.*)$/);
+    if (m && /[\d,]+/.test(m[2])) return m[1] + formatNumberStr(m[2], 'western') + m[3];
+    m = String(displayValue).match(/^([\d,]+)(\s*PHP)$/);
+    if (m) return formatNumberStr(m[1], 'western') + m[2];
+    return displayValue;
+  }
+
+  function translate(text) {
+    const map = TRANSLATIONS[currentLang];
+    if (!map) return text;
+    // 完整字串對照優先
+    if (map[text] !== undefined) return map[text];
+    // 否則逐字將阿拉伯數字轉成對應文字數字
+    if (currentLang === 'nepali' || currentLang === 'bengali') {
+      let result = String(text);
+      // Bengali：把 रु 符號換成 ৳
+      if (currentLang === 'bengali') {
+        result = result.replace(/रु/g, '৳');
+      }
+      // 對數字部分套用印度式千分位（貨幣符號後面的數字，或純數字）
+      // 匹配：可選符號前綴 + 數字（含已有逗號）
+      // 孟加拉用西式千分位，尼泊爾用印度式千分位
+      const sepStyle = (currentLang === 'bengali') ? 'western' : 'indian';
+      result = result.replace(/([^\d,]?)([\d,]+)/g, (match, prefix, numPart) => {
+        return prefix + formatNumberStr(numPart, sepStyle);
+      });
+      return convertDigits(result, currentLang);
+    }
+    return text;
+  }
+
+  // ── translateEnglish: 英文版依當前語言轉換貨幣符號顯示（含自動西式千分位）──
+  // bengali:  रु10000  →  ৳10,000
+  // tagalog:  रु10000  →  10,000 PHP
+  // nepali:   रु10000  →  रु10,000
+  function translateEnglish(text) {
+    const s = String(text);
+    if (currentLang === 'bengali') {
+      return s.replace(/रु([\d,]+)/g, (_, num) => '৳' + formatNumberStr(num, 'western'));
+    }
+    if (currentLang === 'tagalog') {
+      return s.replace(/रु([\d,]+)/g, (_, num) => formatNumberStr(num, 'western') + ' PHP');
+    }
+    // nepali (或其他)：只加千分位，保留 रु
+    return s.replace(/रु([\d,]+)/g, (_, num) => 'रु' + formatNumberStr(num, 'western'));
+  }
+
+  // ── detranslateEnglish: 反向轉換，把使用者在英文版輸入的顯示值存回 tableData 原始格式 ──
+  // 存回時一律用西式千分位（formatNumberStr western）
+  function detranslateEnglish(text) {
+    if (currentLang === 'bengali') {
+      // ৳10,000 → रु10,000
+      return String(text).replace(/৳([\d,]+)/g, (_, num) => 'रु' + formatNumberStr(num, 'western'));
+    }
+    if (currentLang === 'tagalog') {
+      return String(text).replace(/([\d,]+)\s*PHP/g, 'रु$1');
+    }
+    return text;
+  }
+  // ══════════════════════════════════════════════════════════
+  const defaultTableData = [
+    {
+      groupName: "PROMOTION",
+      headerColumns: ["PROMOTION"],
+      rows: [
+        ["GAME TYPES", "ALL GAMES"],
+        ["REPETITIONS", "ONE-TIME"],
+        ["BONUS %", "100%"],
+        ["MIN DEPOSIT", "रु100"],
+        ["MAX BONUS", "रु1,000"],
+        ["TURNOVER", "1X"],
+        ["MAX WITHDRAWAL", "रु500"]
+      ]
+    }
+  ];
+
+  let tableData = JSON.parse(JSON.stringify(defaultTableData));
+  let secondaryTableData = [];
+  // secondaryOverrides: key="{gi}-{ri}-{ci}", value=string — manually edited secondary cells
+  // key="{gi}-h-{ci}", value=string — manually edited secondary header cells
+  let secondaryOverrides = {};
+
+  // ── spanData: key="{gi}-{type}-{ri}-{ci}", val={cs,rs}|"hidden" ──
+  let spanData = {};
+
+  // highlightCells: key = "gi-ri-ci" (position-based), value = true
+  const highlightCells = {};
+
+  let history = [];
+  let historyIndex = -1;
+
+  // ── rebuild secondary (translated) data ──
+  function rebuildSecondaryData() {
+    secondaryTableData = tableData.map((group, gi) => ({
+      groupName: translate(group.groupName),
+      headerColumns: (group.headerColumns || [group.groupName]).map((c, ci) => {
+        const key = `${gi}-h-${ci}`;
+        return secondaryOverrides[key] !== undefined ? secondaryOverrides[key] : translate(c);
+      }),
+      rows: group.rows.map((row, ri) => row.map((cell, ci) => {
+        const key = `${gi}-${ri}-${ci}`;
+        return secondaryOverrides[key] !== undefined ? secondaryOverrides[key] : translate(cell);
+      }))
+    }));
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  THEME SWITCHING
+  // ══════════════════════════════════════════════════════════
+  function applyThemeForLang(lang) {
+    const cfg = LANG_CONFIG[lang];
+    document.body.className = cfg.themeClass;
+  }
+
+  function switchLang(lang) {
+    currentLang = lang;
+    applyThemeForLang(lang);
+    rebuildSecondaryData();
+    renderTopBar();
+    renderAll();
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  TOP BAR
+  // ══════════════════════════════════════════════════════════
+  function renderTopBar() {
+    const bar = document.getElementById('top-bar');
+    bar.innerHTML = '';
+
+    const lbl = document.createElement('span');
+    lbl.style.cssText = 'font-size:12px;font-weight:700;color:rgba(255,255,255,0.85);margin-right:4px;';
+    lbl.textContent = '🌐 語言 / 主題：';
+    bar.appendChild(lbl);
+
+    // 各語言主色（永遠顯示，不受當前主題影響）
+    const MAIN_COLORS = {
+      nepali:  { bg: '#3531a8', text: '#fff' },
+      bengali: { bg: '#22a085', text: '#fff' },
+      tagalog: { bg: '#f246ff', text: '#fff' },
+    };
+
+    Object.entries(LANG_CONFIG).forEach(([key, cfg]) => {
+      const active = key === currentLang;
+      const mc = MAIN_COLORS[key];
+      const btn = document.createElement('button');
+      btn.className = 'lang-btn';
+      btn.textContent = cfg.label;
+      btn.style.cssText = `
+        background: ${mc.bg};
+        color: ${mc.text};
+        opacity: ${active ? '1' : '0.45'};
+        box-shadow: ${active ? '0 2px 10px rgba(0,0,0,0.3)' : 'none'};
+        transform: ${active ? 'scale(1.08)' : 'scale(1)'};
+        border: 2px solid ${active ? '#fff' : 'transparent'};
+        transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      `;
+      btn.onmouseenter = () => { if (key !== currentLang) btn.style.opacity = '0.75'; };
+      btn.onmouseleave = () => { if (key !== currentLang) btn.style.opacity = '0.45'; };
+      btn.onclick = () => switchLang(key);
+      bar.appendChild(btn);
+    });
+
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  UTILITY
+  // ══════════════════════════════════════════════════════════
+  function createElement(tag, attrs={}, ...children) {
+    const el = document.createElement(tag);
+    for (const [k,v] of Object.entries(attrs)) {
+      if (k.startsWith('on') && typeof v==='function') el.addEventListener(k.slice(2).toLowerCase(),v);
+      else if (k==='className') el.className=v;
+      else el.setAttribute(k,v);
+    }
+    for (const c of children) {
+      if (typeof c==='string') el.appendChild(document.createTextNode(c));
+      else if (c) el.appendChild(c);
+    }
+    return el;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  HISTORY
+  // ══════════════════════════════════════════════════════════
+  function saveToHistory() {
+    history = history.slice(0, historyIndex+1);
+    history.push({
+      tableData: JSON.parse(JSON.stringify(tableData)),
+      highlights: {...highlightCells},
+      spanData: JSON.parse(JSON.stringify(spanData)),
+      cellBgData: {...cellBgData},
+      secondaryOverrides: {...secondaryOverrides}
+    });
+    historyIndex = history.length-1;
+    if (history.length>50) { history.shift(); historyIndex--; }
+  }
+
+  function restoreState() {
+    const s = history[historyIndex];
+    tableData = JSON.parse(JSON.stringify(s.tableData));
+    Object.keys(highlightCells).forEach(k=>delete highlightCells[k]);
+    Object.assign(highlightCells, s.highlights);
+    Object.keys(spanData).forEach(k=>delete spanData[k]);
+    if (s.spanData) Object.assign(spanData, JSON.parse(JSON.stringify(s.spanData)));
+    Object.keys(cellBgData).forEach(k=>delete cellBgData[k]);
+    if (s.cellBgData) Object.assign(cellBgData, s.cellBgData);
+    Object.keys(secondaryOverrides).forEach(k=>delete secondaryOverrides[k]);
+    if (s.secondaryOverrides) Object.assign(secondaryOverrides, s.secondaryOverrides);
+    rebuildSecondaryData();
+    renderAll();
+  }
+
+  function resetToDefault() {
+    if (!confirm("Are you sure to reset?")) return;
+    tableData = JSON.parse(JSON.stringify(defaultTableData));
+    Object.keys(highlightCells).forEach(k=>delete highlightCells[k]);
+    Object.keys(spanData).forEach(k=>delete spanData[k]);
+    Object.keys(cellBgData).forEach(k=>delete cellBgData[k]);
+    Object.keys(secondaryOverrides).forEach(k=>delete secondaryOverrides[k]);
+    history=[]; historyIndex=-1;
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  SPAN HELPERS
+  // ══════════════════════════════════════════════════════════
+  function sKey(gi,type,ri,ci) { return `${gi}-${type}-${ri}-${ci}`; }
+
+  function getSpan(gi,type,ri,ci) {
+    const v = spanData[sKey(gi,type,ri,ci)];
+    return (!v || v==="hidden") ? null : v;
+  }
+  function isHidden(gi,type,ri,ci) { return spanData[sKey(gi,type,ri,ci)]==="hidden"; }
+
+  function clearSpan(gi,type,ri,ci) {
+    const key=sKey(gi,type,ri,ci), v=spanData[key];
+    if (!v||v==="hidden") return;
+    const {cs=1,rs=1}=v; delete spanData[key];
+    for (let dr=0;dr<rs;dr++) for (let dc=0;dc<cs;dc++) {
+      if (dr===0&&dc===0) continue;
+      delete spanData[sKey(gi,type,ri+dr,ci+dc)];
+    }
+  }
+
+  function applySpan(gi,type,ri,ci,cs,rs) {
+    clearSpan(gi,type,ri,ci);
+    if (cs===1&&rs===1) { saveToHistory(); renderAll(); return; }
+    spanData[sKey(gi,type,ri,ci)]={cs,rs};
+    for (let dr=0;dr<rs;dr++) for (let dc=0;dc<cs;dc++) {
+      if (dr===0&&dc===0) continue;
+      spanData[sKey(gi,type,ri+dr,ci+dc)]="hidden";
+    }
+    saveToHistory(); renderAll();
+  }
+
+  function showSpanPanel(gi,type,ri,ci,anchorEl,maxCols,maxRows) {
+    document.querySelectorAll('.span-panel').forEach(p=>p.remove());
+    const existing=getSpan(gi,type,ri,ci);
+    const curCs=existing?existing.cs:1, curRs=existing?existing.rs:1;
+    const accentColor = LANG_CONFIG[currentLang].accentColor;
+
+    const panel=document.createElement('div');
+    panel.className='span-panel';
+    panel.style.cssText=`position:fixed;background:#fff;border:2px solid ${accentColor};border-radius:8px;
+      padding:10px 14px;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.25);
+      font-size:13px;color:#222;min-width:200px;`;
+    panel.innerHTML=`
+      <div style="font-weight:900;color:${accentColor};margin-bottom:8px;font-size:14px;">⊞ 跨格設定</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="width:50px;">橫跨欄：</span>
+        <input id="sp-cs" type="number" min="1" max="10" value="${curCs}"
+          style="width:50px;border:1px solid #aaa;border-radius:4px;padding:2px 4px;font-size:13px;color:#222;background:#fff;text-shadow:none;min-width:unset;">
+        <span style="color:#888;font-size:11px;">最多 10</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="width:50px;">縱跨列：</span>
+        <input id="sp-rs" type="number" min="1" max="10" value="${curRs}"
+          style="width:50px;border:1px solid #aaa;border-radius:4px;padding:2px 4px;font-size:13px;color:#222;background:#fff;text-shadow:none;min-width:unset;">
+        <span style="color:#888;font-size:11px;">最多 10</span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button id="sp-apply" style="flex:1;background:${accentColor};color:#fff;border:none;border-radius:5px;padding:4px 0;cursor:pointer;font-weight:700;">套用</button>
+        <button id="sp-cancel-span" style="flex:1;background:#e74c3c;color:#fff;border:none;border-radius:5px;padding:4px 0;cursor:pointer;font-weight:700;">取消跨格</button>
+        <button id="sp-close" style="background:#aaa;color:#fff;border:none;border-radius:5px;padding:4px 8px;cursor:pointer;">✕</button>
+      </div>`;
+    document.body.appendChild(panel);
+
+    const rect=anchorEl.getBoundingClientRect();
+    let top=rect.bottom+4, left=rect.left;
+    if (left+220>window.innerWidth) left=window.innerWidth-225;
+    if (top+190>window.innerHeight) top=rect.top-195;
+    panel.style.top=top+'px'; panel.style.left=left+'px';
+
+    panel.querySelector('#sp-apply').onclick=()=>{
+      const cs=Math.max(1,Math.min(parseInt(panel.querySelector('#sp-cs').value)||1,10));
+      const rs=Math.max(1,Math.min(parseInt(panel.querySelector('#sp-rs').value)||1,10));
+      panel.remove(); applySpan(gi,type,ri,ci,cs,rs);
+    };
+    panel.querySelector('#sp-cancel-span').onclick=()=>{ panel.remove(); applySpan(gi,type,ri,ci,1,1); };
+    panel.querySelector('#sp-close').onclick=()=>panel.remove();
+    setTimeout(()=>{
+      document.addEventListener('mousedown',function fn(e){
+        if (!panel.contains(e.target)){panel.remove();document.removeEventListener('mousedown',fn);}
+      });
+    },50);
+  }
+
+  function normalizeGroupStructures() {
+    tableData.forEach((group,gi)=>{
+      if (!group.headerColumns||!group.headerColumns.length)
+        group.headerColumns=[group.groupName||""];
+      if (!group.rows||!group.rows.length) group.rows=[[""]];
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  RENDER PREVIEW
+  // ══════════════════════════════════════════════════════════
+  function renderPreview() {
+    const preview=document.getElementById('preview-area');
+    preview.innerHTML='';
+    preview.style.cssText='background:#fff;display:flex;flex-direction:column;gap:10px;';
+
+    const cfg = LANG_CONFIG[currentLang];
+
+    // ── Top controls ──
+    const ctrlRow=createElement('div',{style:'display:flex;justify-content:space-between;width:100%;margin-bottom:5px;align-items:center;'});
+    ctrlRow.appendChild(createElement('button',{
+      onclick:resetToDefault,
+      style:`padding:3px 8px;font-size:12px;background:${cfg.accentColor};`
+    },'🔄 Reset Default'));
+    ctrlRow.appendChild(createElement('button',{
+      id:'download-btn',onclick:()=>downloadTableAsJPG(),
+      style:'padding:6px 15px;font-size:16px;background:#e74c3c;border-radius:6px;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.2);cursor:pointer;'
+    },'📥 Download Both'));
+    preview.appendChild(ctrlRow);
+
+    // ── Language columns ──
+    const langWrap=createElement('div',{className:'languages-container',style:'display:flex;width:100%;gap:20px;justify-content:space-between;'});
+    const engBox=createElement('div',{id:'english-container',className:'table-language-container',style:'flex:1;'});
+    const secBox=createElement('div',{id:'secondary-container',className:'table-language-container',style:'flex:1;'});
+
+    engBox.appendChild(createElement('h3',{style:`text-align:center;color:${cfg.h3Color};margin:0 0 3px;font-size:16px;`},'English Version'));
+    secBox.appendChild(createElement('h3',{style:`text-align:center;color:${cfg.h3Color};margin:0 0 3px;font-size:16px;`},cfg.secondLabel));
+    secBox.appendChild(createElement('div',{style:'text-align:center;margin-bottom:4px;'},
+      createElement('button',{
+        title:'清除所有手動修改，還原自動翻譯',
+        onclick:function(){
+          if (!confirm('清除所有手動修改，還原自動翻譯？')) return;
+          Object.keys(secondaryOverrides).forEach(k=>delete secondaryOverrides[k]);
+          saveToHistory(); rebuildSecondaryData(); renderAll();
+        },
+        style:`font-size:11px;padding:2px 10px;background:rgba(255,140,0,0.8);color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:700;`
+      },'↺ 還原全部翻譯')
+    ));
+
+    // English tables (editable)
+    tableData.forEach((group,gi)=>{
+      const wrap=createElement('div',{className:'table-container',style:'position:relative;margin-bottom:30px;'});
+
+      wrap.appendChild(createElement('button',{
+        onclick:()=>onAddHeaderColumn(gi),className:'mobile-friendly-btn',
+        style:'position:absolute;right:0;top:15px;padding:5px;background:#9b59b6;z-index:1000;cursor:pointer;'
+      },'+上欄'));
+      wrap.appendChild(createElement('button',{
+        onclick:()=>onAddColumn(gi),className:'mobile-friendly-btn',
+        style:'position:absolute;right:0;top:50px;padding:5px;background:#2ecc71;z-index:1000;cursor:pointer;'
+      },'+下欄'));
+      wrap.appendChild(createElement('button',{
+        onclick:()=>onDeleteGroup(gi),className:'mobile-friendly-btn',
+        style:'position:absolute;right:-30px;top:-25px;padding:2px 5px;background:#e74c3c;font-size:12px;z-index:1000;'
+      },'✕'));
+      const tableEl = createTable(group,gi,false);
+      wrap.appendChild(tableEl);
+      wrap.appendChild(createElement('button',{
+        onclick:()=>onAddRow(gi),className:'mobile-friendly-btn',
+        style:'width:100%;padding:5px;margin-top:2px;background:#3498db;border:none;color:white;cursor:pointer;font-weight:bold;text-align:center;'
+      },'➕ Add Row'));
+      wrap.appendChild(createElement('button',{
+        onclick:()=>onAddGroup(),className:'mobile-friendly-btn',
+        style:'width:100%;padding:5px;margin-top:5px;background:#2ecc71;border:none;color:white;cursor:pointer;font-weight:bold;text-align:center;margin-bottom:10px;'
+      },'➕ Add Group'));
+
+      engBox.appendChild(wrap);
+    });
+
+    // Secondary tables (read-only, translated)
+    secondaryTableData.forEach((group,gi)=>{
+      secBox.appendChild(createTable(group,gi,true));
+    });
+
+    langWrap.appendChild(engBox);
+    langWrap.appendChild(secBox);
+    preview.appendChild(langWrap);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  CREATE TABLE
+  // ══════════════════════════════════════════════════════════
+  function createTable(group, gi, isReadOnly) {
+    const table=createElement('table',{className:'table-custom',style:'margin-bottom:10px;position:relative;'});
+
+    const headerColumns=(group.headerColumns&&group.headerColumns.length)?group.headerColumns:[group.groupName||""];
+    const dataColumnCount=Math.max(1,...(group.rows||[[]]).map(r=>(r||[]).length));
+    const headerColumnCount=Math.max(1,headerColumns.length);
+    const dataRowCount=(group.rows||[]).length;
+    const headerWidth=100/headerColumnCount;
+
+    // ── Header row ──
+    const groupTr=createElement('tr',{});
+    for (let ci=0;ci<headerColumnCount;ci++) {
+      if (isHidden(gi,'h',0,ci)) continue;
+      const span=getSpan(gi,'h',0,ci);
+      const rs=span?span.rs:1;
+
+      // 若只有一個標題格，自動橫跨所有資料欄（除非用戶手動設了跨格）
+      const autoCs = (headerColumnCount===1 && !span) ? dataColumnCount : (span?span.cs:1);
+      const cs = autoCs;
+
+      const th=createElement('th',{className:'group-header'});
+      if (cs>1) th.setAttribute('colspan',cs);
+      if (rs>1) th.setAttribute('rowspan',rs);
+
+      const isHdrOverridden = isReadOnly && secondaryOverrides[`${gi}-h-${ci}`] !== undefined;
+      const hInp = document.createElement('textarea');
+      hInp.value = headerColumns[ci] || '';
+      hInp.rows = 1;
+      hInp.setAttribute('style', `width:100%;text-align:center;background:transparent;border:none;font-size:1em;font-weight:900;color:inherit;letter-spacing:1px;text-transform:uppercase;resize:none;overflow:hidden;display:block;line-height:1.4;white-space:pre;${isHdrOverridden?'border-bottom:1.5px dashed rgba(255,200,0,0.7);':''}`);
+      function autoResizeHdr(ta) { ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; }
+      hInp.addEventListener('input', function(){ autoResizeHdr(this); });
+      setTimeout(()=>autoResizeHdr(hInp), 0);
+      hInp.addEventListener('change', e=>{
+        if (isReadOnly) {
+          const key=`${gi}-h-${ci}`;
+          secondaryOverrides[key]=e.target.value;
+          secondaryTableData[gi].headerColumns[ci]=e.target.value;
+          if (ci===0) secondaryTableData[gi].groupName=e.target.value;
+          saveToHistory();
+        } else {
+          tableData[gi].headerColumns[ci]=e.target.value;
+          if (ci===0) tableData[gi].groupName=e.target.value;
+          delete secondaryOverrides[`${gi}-h-${ci}`];
+          rebuildSecondaryData(); saveToHistory();
+        }
+        renderAll();
+      });
+      th.appendChild(hInp);
+      if (isReadOnly && isHdrOverridden) {
+        th.appendChild(createElement('button',{
+          title:'重置為自動翻譯',
+          onclick:function(e){
+            e.stopPropagation();
+            delete secondaryOverrides[`${gi}-h-${ci}`];
+            saveToHistory(); rebuildSecondaryData(); renderAll();
+          },
+          style:'font-size:9px;padding:0 4px;background:rgba(255,180,0,0.75);color:#222;border:none;cursor:pointer;border-radius:2px;line-height:14px;display:block;margin:2px auto 0;font-weight:900;'
+        },'↺'));
+      }
+
+      if (!isReadOnly) {
+        const hasSpan=!!(span&&(cs>1||rs>1));
+        th.appendChild(createElement('div',{style:'display:flex;justify-content:center;margin-top:2px;'},
+          createElement('button',{
+            title:'設定跨格',
+            onclick:function(e){e.stopPropagation();showSpanPanel(gi,'h',0,ci,this,10,10);},
+            style:`font-size:9px;padding:0 4px;background:${hasSpan?'#e67e22':'#8e44ad'};color:white;border:none;cursor:pointer;border-radius:2px;line-height:14px;`
+          }, hasSpan?`⊞${cs}×${rs}`:'⊞跨')
+        ));
+      }
+      groupTr.appendChild(th);
+    }
+
+    if (!isReadOnly) {
+      groupTr.appendChild(createElement('th',{className:'del-row-td',style:'border:none !important;background:transparent;width:1px;padding:0;'},''));
+    }
+    table.appendChild(createElement('thead',{},groupTr));
+
+    // Delete header column buttons — append after thead, positioned by JS after render
+    if (!isReadOnly&&headerColumnCount>1) {
+      for (let ci=0;ci<headerColumnCount;ci++) {
+        table.appendChild(createElement('button',{
+          onclick:()=>onDeleteHeaderColumn(gi,ci),
+          style:`position:absolute;top:4px;left:${ci*headerWidth+headerWidth/2}%;transform:translateX(-50%);font-size:10px;padding:0 3px;background:#8e44ad;color:white;border:none;cursor:pointer;z-index:50;`
+        },'✕'));
+      }
+    }
+
+    // Delete data column buttons
+    if (!isReadOnly&&dataColumnCount>1) {
+      const dw=100/dataColumnCount;
+      for (let ci=0;ci<dataColumnCount;ci++) {
+        table.appendChild(createElement('button',{
+          onclick:()=>onDeleteColumn(gi,ci),
+          style:`position:absolute;top:35px;left:${ci*dw+dw/2}%;transform:translateX(-50%);font-size:10px;padding:0 3px;background:#e74c3c;color:white;border:none;cursor:pointer;z-index:50;`
+        },'✕'));
+      }
+    }
+
+    // ── Data rows ──
+    (group.rows||[]).forEach((row,ri)=>{
+      const currentRow=row||[];
+      const currentColumnCount=Math.max(1,currentRow.length);
+      const cellWidth=100/dataColumnCount;
+      const tr=createElement('tr',{});
+
+      for (let ci=0;ci<currentColumnCount;ci++) {
+        if (isHidden(gi,'d',ri,ci)) continue;
+        const span=getSpan(gi,'d',ri,ci);
+        const cs=span?span.cs:1, rs=span?span.rs:1;
+
+        const bgKey = `${gi}-${ri}-${ci}`;
+        // cellBgData[bgKey] = true → 格子有標題欄底色
+        const hasBg = !!cellBgData[bgKey];
+
+        const td=createElement('td',{
+          'data-gi': gi,
+          'data-ri': ri,
+          'data-ci': ci,
+          style:`background-color:${hasBg ? 'var(--c-hdr-bg)' : '#fff'};`
+        });
+        if (cs>1) td.setAttribute('colspan',cs);
+        if (rs>1) td.setAttribute('rowspan',rs);
+
+        const cell=currentRow[ci]||'';
+
+        // highlight 判斷——用格子位置為 key，英文版與翻譯版共用同一份 highlightCells
+        const hlKey = `${gi}-${ri}-${ci}`;
+        const isHL = !!highlightCells[hlKey];
+
+        // 文字色：
+        //   有底色 + 無HL → 標題欄文字色
+        //   有底色 + 有HL → 橘黃高亮色（原本樣式）
+        //   無底色 + 有HL → 橘黃高亮色
+        //   無底色 + 無HL → 預設深色
+        let textColor, fontWeight;
+        if (isHL) {
+          textColor = 'var(--c-hl-color)';
+          fontWeight = '900';
+        } else if (hasBg) {
+          textColor = 'var(--c-hdr-fg)';
+          fontWeight = '900';
+        } else {
+          textColor = 'var(--c-cell-fg)';
+          fontWeight = 'bold';
+        }
+
+        const isOverridden = isReadOnly && secondaryOverrides[`${gi}-${ri}-${ci}`] !== undefined;
+        const inputStyle = `width:100%;text-align:center;background:transparent;border:none;font-size:1.2em;color:${textColor};font-weight:${fontWeight};${isOverridden?'border-bottom:1.5px dashed rgba(255,140,0,0.6);':''}`;
+
+        const cellVal = isReadOnly ? cell : translateEnglish(cell);
+        const cellInp = document.createElement('textarea');
+        cellInp.value = cellVal;
+        cellInp.rows = 1;
+        cellInp.setAttribute('style', inputStyle);
+        if (isHL) cellInp.classList.add('highlight-input');
+        if (isHL) cellInp.setAttribute('data-hlkey', `${gi}-${ri}-${ci}`);
+
+        // 自動調整高度（依內容行數）
+        function autoResize(ta) {
+          ta.style.height = 'auto';
+          ta.style.height = ta.scrollHeight + 'px';
+        }
+        cellInp.addEventListener('input', function() { autoResize(this); });
+        // 初始高度
+        setTimeout(() => autoResize(cellInp), 0);
+
+        cellInp.addEventListener('change', e => {
+          if (isReadOnly) {
+            const key=`${gi}-${ri}-${ci}`;
+            secondaryOverrides[key]=e.target.value;
+            secondaryTableData[gi].rows[ri][ci]=e.target.value;
+            saveToHistory();
+          } else {
+            // detranslate 回原始 रु 格式，再自動補千分位
+            let rawVal = detranslateEnglish(e.target.value);
+            rawVal = applyThousandSep(rawVal);
+            tableData[gi].rows[ri][ci]=rawVal;
+            delete secondaryOverrides[`${gi}-${ri}-${ci}`];
+            rebuildSecondaryData(); saveToHistory();
+          }
+          renderAll();
+        });
+        td.appendChild(cellInp);
+
+        // Secondary side: show reset button for overridden cells
+        if (isReadOnly && isOverridden) {
+          const resetBtn = createElement('button',{
+            title:'重置為自動翻譯',
+            onclick:function(e){
+              e.stopPropagation();
+              delete secondaryOverrides[`${gi}-${ri}-${ci}`];
+              saveToHistory(); rebuildSecondaryData(); renderAll();
+            },
+            style:'font-size:9px;padding:0 4px;background:rgba(255,140,0,0.75);color:#fff;border:none;cursor:pointer;border-radius:2px;line-height:14px;display:block;margin:2px auto 0;'
+          },'↺');
+          td.appendChild(resetBtn);
+        }
+
+        // Cell action buttons (English side only)
+        if (!isReadOnly) {
+          const hasSpan=!!(span&&(cs>1||rs>1));
+          const btnWrap=createElement('div',{style:'display:flex;justify-content:center;gap:2px;margin-top:2px;'});
+
+          // 🎨 底色切換（標題欄底色 ↔ 白底）
+          btnWrap.appendChild(createElement('button',{
+            title: hasBg ? '移除底色' : '套用標題欄底色',
+            onclick:function(e){
+              e.stopPropagation();
+              if (cellBgData[bgKey]) delete cellBgData[bgKey];
+              else cellBgData[bgKey] = true;
+              saveToHistory(); renderAll();
+            },
+            style:`font-size:9px;padding:0 3px;background:${hasBg ? 'var(--c-hdr-bg)' : '#bbb'};color:${hasBg ? 'var(--c-hdr-fg)' : '#fff'};border:none;cursor:pointer;border-radius:2px;line-height:14px;font-weight:900;${hasBg ? 'outline:1px solid rgba(255,255,255,0.5);' : ''}`
+          }, '🎨'));
+
+          btnWrap.appendChild(createElement('button',{
+            title:'在右側插入新格',
+            onclick:function(e){e.stopPropagation();onSplitCell(gi,ri,ci);},
+            style:'font-size:9px;padding:0 3px;background:#27ae60;color:white;border:none;cursor:pointer;border-radius:2px;line-height:14px;'
+          },'+格'));
+
+          btnWrap.appendChild(createElement('button',{
+            title:'設定跨格（橫/縱）',
+            onclick:function(e){e.stopPropagation();showSpanPanel(gi,'d',ri,ci,this,10,10);},
+            style:`font-size:9px;padding:0 3px;background:${hasSpan?'#e67e22':'#2980b9'};color:white;border:none;cursor:pointer;border-radius:2px;line-height:14px;`
+          },hasSpan?`⊞${cs}×${rs}`:'⊞跨'));
+
+          td.appendChild(btnWrap);
+        }
+        tr.appendChild(td);
+      }
+
+      if (!isReadOnly) {
+        tr.appendChild(createElement('td',{className:'del-row-td'},
+          createElement('button',{onclick:()=>onDeleteRow(gi,ri),style:'font-size:10px;padding:0 3px;background:#e74c3c;margin-left:3px;'},'✕')
+        ));
+      }
+      table.appendChild(tr);
+    });
+
+    return table;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  TABLE OPERATIONS
+  // ══════════════════════════════════════════════════════════
+  function onAddGroup() {
+    tableData.push({groupName:"New Group",headerColumns:["New Group"],rows:[["",""]]});
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+  function onDeleteGroup(gi) {
+    if (!confirm("Are you sure to delete this group?")) return;
+    tableData.splice(gi,1);
+    // Clear span data for this group
+    Object.keys(spanData).forEach(k=>{ if(k.startsWith(gi+'-'))delete spanData[k]; });
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+  function onAddHeaderColumn(gi) {
+    if (!tableData[gi].headerColumns) tableData[gi].headerColumns=[tableData[gi].groupName||"",""];
+    tableData[gi].headerColumns.push("");
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+  function onDeleteHeaderColumn(gi,ci) {
+    if (!tableData[gi].headerColumns||tableData[gi].headerColumns.length<=1)
+      return alert("At least one header column is required!");
+    tableData[gi].headerColumns.splice(ci,1);
+    if (ci===0) tableData[gi].groupName=tableData[gi].headerColumns[0]||"";
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+  function onAddColumn(gi) {
+    tableData[gi].rows.forEach(r=>r.push(""));
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+  function onDeleteColumn(gi,ci) {
+    if (tableData[gi].rows[0].length<=1) return alert("At least one column is required!");
+    tableData[gi].rows.forEach(r=>r.splice(ci,1));
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+  function onAddRow(gi) {
+    tableData[gi].rows.push(Array(tableData[gi].rows[0].length).fill(""));
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+  function onDeleteRow(gi,ri) {
+    if (tableData[gi].rows.length<=1) return alert("At least one row is required!");
+    tableData[gi].rows.splice(ri,1);
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+
+  function onSplitCell(gi,ri,ci) {
+    const row=tableData[gi].rows[ri];
+    row.splice(ci+1,0,"");
+    const maxCols=Math.max(...tableData[gi].rows.map(r=>r.length));
+    tableData[gi].rows.forEach(r=>{while(r.length<maxCols)r.push("");});
+    // Shift spanData
+    const newSpan={};
+    Object.keys(spanData).forEach(key=>{
+      const [kgi,ktype,kri,kci]=key.split('-'); const ikgi=+kgi,ikri=+kri,ikci=+kci;
+      if (ikgi===gi&&ktype==='d'&&ikri===ri&&ikci>=ci+1)
+        newSpan[sKey(ikgi,ktype,ikri,ikci+1)]=spanData[key];
+      else newSpan[key]=spanData[key];
+    });
+    Object.keys(spanData).forEach(k=>delete spanData[k]);
+    Object.assign(spanData,newSpan);
+    saveToHistory(); rebuildSecondaryData(); renderAll();
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  HIGHLIGHT (right-click)
+  // ══════════════════════════════════════════════════════════
+  function addHighlightControls() {
+    document.addEventListener('contextmenu',e=>{
+      const t=e.target;
+      if ((t.tagName==='INPUT'||t.tagName==='TEXTAREA')&&t.parentNode.tagName==='TD') {
+        e.preventDefault();
+        // 從 input 往上找到所在的 td，再找 tr、tbody/table，算出 gi/ri/ci
+        const td = t.parentNode;
+        const tr = td.parentNode;
+        const tbody = tr.parentNode;
+        const table = tbody.closest('table');
+
+        // 取得 data-gi, data-ri, data-ci（我們在 createElement td/tr 時注入）
+        const gi = parseInt(td.getAttribute('data-gi'));
+        const ri = parseInt(td.getAttribute('data-ri'));
+        const ci = parseInt(td.getAttribute('data-ci'));
+        if (isNaN(gi)||isNaN(ri)||isNaN(ci)) return;
+
+        const hlKey = `${gi}-${ri}-${ci}`;
+        if (highlightCells[hlKey]) {
+          delete highlightCells[hlKey];
+          t.classList.remove('highlight-input');
+          t.style.color = '';
+          t.style.fontWeight = '';
+          t.style.textShadow = '';
+        } else {
+          highlightCells[hlKey] = true;
+          t.classList.add('highlight-input');
+          t.style.color = 'var(--c-hl-color)';
+        }
+        saveToHistory(); renderAll();
+      }
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  DOWNLOAD
+  // ══════════════════════════════════════════════════════════
+  function downloadTableAsJPG() {
+    const eng=document.getElementById('english-container');
+    const sec=document.getElementById('secondary-container');
+    if (!eng||!sec) return alert("Container not found.");
+    processAndDownload(eng,'table-english.jpg',()=>
+      processAndDownload(sec,`table-${currentLang}.jpg`)
+    );
+  }
+
+  function processAndDownload(container,filename,callback) {
+    const bgColor = LANG_CONFIG[currentLang].downloadBg;
+
+    // ── 讀取 CSS 變數真實值 ──
+    const bs = getComputedStyle(document.body);
+    const R = {
+      hdrBg:    bs.getPropertyValue('--c-hdr-bg').trim(),
+      hdrFg:    bs.getPropertyValue('--c-hdr-fg').trim(),
+      cellFg:   bs.getPropertyValue('--c-cell-fg').trim(),
+      border2:  bs.getPropertyValue('--c-border2').trim(),
+      hlColor:  bs.getPropertyValue('--c-hl-color').trim(),
+      hlShadow: bs.getPropertyValue('--c-hl-shadow').trim(),
+    };
+
+    // 創建臨時 DIV
+    const tempDiv = document.createElement('div');
+    tempDiv.style.background  = bgColor;
+    tempDiv.style.width       = 'fit-content';
+    tempDiv.style.minWidth    = '0';
+    tempDiv.style.padding     = '0';
+    tempDiv.style.position    = 'absolute';
+    tempDiv.style.left        = '-9999px';
+    tempDiv.style.whiteSpace  = 'normal';
+
+    // ── 把 CSS 變數注入 tempDiv，讓 html2canvas 能解析 ──
+    Object.entries(R).forEach(([k, v]) => {
+      tempDiv.style.setProperty('--c-' + k.replace(/([A-Z])/g, m => '-' + m.toLowerCase()), v);
+    });
+    // 直接用 key→css var name 對應
+    tempDiv.style.setProperty('--c-hdr-bg',   R.hdrBg);
+    tempDiv.style.setProperty('--c-hdr-fg',   R.hdrFg);
+    tempDiv.style.setProperty('--c-cell-fg',  R.cellFg);
+    tempDiv.style.setProperty('--c-border2',  R.border2);
+    tempDiv.style.setProperty('--c-hl-color', R.hlColor);
+    tempDiv.style.setProperty('--c-hl-shadow',R.hlShadow);
+
+    document.body.appendChild(tempDiv);
+
+    // 複製表格（不含操作按鈕）
+    // ── 先把所有 textarea 的 value 寫入 defaultValue，確保 cloneNode 能複製值 ──
+    container.querySelectorAll('textarea').forEach(ta => { ta.defaultValue = ta.value; });
+
+    const wrap = document.createElement('div');
+    container.querySelectorAll('.table-custom').forEach(t => wrap.appendChild(t.cloneNode(true)));
+    wrap.style.display  = 'inline-block';
+    wrap.style.overflow = 'hidden';  // 裁掉外圍 td border 超出的半條線
+
+    tempDiv.appendChild(wrap);
+
+    // 讓表格寬度跟著內容自動調整
+    wrap.querySelectorAll('.table-custom').forEach(t => {
+      t.style.width       = 'auto';
+      t.style.tableLayout = 'auto';
+      t.style.border      = 'none';
+      t.style.marginBottom = '0';
+    });
+
+    // ── textarea/input 轉換為 span（保留換行與樣式）——必須在量寬之前做 ──
+    tempDiv.querySelectorAll('input, textarea').forEach(input => {
+      const parent = input.parentNode;
+      const gi = parseInt(parent.getAttribute('data-gi'));
+      const ri = parseInt(parent.getAttribute('data-ri'));
+      const ci = parseInt(parent.getAttribute('data-ci'));
+      const hlKey = `${gi}-${ri}-${ci}`;
+      const span = document.createElement('span');
+
+      // 直接從 textarea 的 computed style 抓已解析的顏色，避免 html2canvas 無法解析 CSS 變數
+      const computed = window.getComputedStyle(input);
+      span.style.color      = computed.color;
+      span.style.fontWeight = computed.fontWeight;
+      span.style.fontSize   = computed.fontSize;
+      span.style.fontFamily = computed.fontFamily;
+      span.style.textShadow = computed.textShadow;
+      span.style.letterSpacing = computed.letterSpacing;
+      span.style.textTransform = computed.textTransform;
+      span.style.whiteSpace = 'pre';
+      span.style.display    = 'inline-block';
+      span.textContent = input.value;
+
+      if (input.classList.contains('highlight-input') || (!isNaN(gi) && highlightCells[hlKey])) {
+        span.className = 'highlight';
+      }
+      parent.replaceChild(span, input);
+    });
+
+    // 移除操作按鈕與 div
+    tempDiv.querySelectorAll('button').forEach(b => b.remove());
+    tempDiv.querySelectorAll('td > div, th > div').forEach(d => d.remove());
+
+    // 移除 del-row-td
+    tempDiv.querySelectorAll('.del-row-td').forEach(el => el.remove());
+
+    // 強制每格樣式
+    tempDiv.querySelectorAll('td, th').forEach(cell => {
+      cell.style.padding    = '8px 12px';
+      cell.style.whiteSpace = 'pre';
+    });
+
+    // 量出每格文字自然寬度
+    const extraPad = 10;
+    tempDiv.querySelectorAll('td, th').forEach(cell => {
+      const contentW = cell.scrollWidth;
+      cell.style.minWidth = (contentW + extraPad) + 'px';
+    });
+
+    // 移除空 td
+    tempDiv.querySelectorAll('td').forEach(td => {
+      if (!td.textContent.trim() && td.children.length === 0) td.remove();
+    });
+
+    // offsetWidth 包含 border，是正確的總寬度
+    const naturalWidth = wrap.offsetWidth;
+    tempDiv.style.width = naturalWidth + 'px';
+    tempDiv.style.whiteSpace = '';
+
+    html2canvas(tempDiv, {
+      backgroundColor: bgColor,
+      scale: 2,
+      useCORS: true,
+      logging: false
+    }).then(canvas => {
+      const a = document.createElement('a');
+      a.download = filename;
+      a.href     = canvas.toDataURL('image/jpeg', 0.95);
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      document.body.removeChild(tempDiv);
+      if (callback) setTimeout(callback, 500);
+    }).catch(err => {
+      console.error(err);
+      alert('下載出錯');
+      document.body.removeChild(tempDiv);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  //  MAIN RENDER
+  // ══════════════════════════════════════════════════════════
+  function renderAll() {
+    normalizeGroupStructures();
+    rebuildSecondaryData();
+    renderPreview();
+  }
+
+  document.getElementById('download-btn').onclick=downloadTableAsJPG;
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    history=[]; historyIndex=-1;
+    saveToHistory();
+    switchLang('nepali'); // default: nepali = blue
+    addHighlightControls();
+  });
+  </script>
+</body>
+</html>
