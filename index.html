@@ -1331,26 +1331,23 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // 遍歷所有表格取最大寬度
+    // 遍歷所有表格取最大寬度（此時 wrap 仍為 inline-block、tables 為 auto）
     let naturalWidth = 0;
     wrap.querySelectorAll('.table-custom').forEach(t => {
       naturalWidth = Math.max(naturalWidth, t.offsetWidth);
     });
 
-    // 把每張表格包進固定寬度的 div，再讓表格 width:100% 填滿
-    // （直接對 table 設 width 在 html2canvas 下不可靠）
-    wrap.querySelectorAll('.table-custom').forEach(t => {
-      const tWrap = document.createElement('div');
-      tWrap.style.cssText = `width:${naturalWidth}px;overflow:hidden;`;
-      t.parentNode.insertBefore(tWrap, t);
-      tWrap.appendChild(t);
-      t.style.width = '100%';
-      t.style.minWidth = '0';
-    });
-
-    wrap.style.width = naturalWidth + 'px';
+    // inline-block 的 % 解析在 html2canvas 下不穩定，改成 block 容器
+    wrap.style.display  = 'block';
+    wrap.style.width    = naturalWidth + 'px';
     tempDiv.style.width = naturalWidth + 'px';
     tempDiv.style.whiteSpace = '';
+
+    // 強制所有表格等寬（現在 100% = block 容器寬度，可靠）
+    wrap.querySelectorAll('.table-custom').forEach(t => {
+      t.style.width = '100%';
+    });
+    void wrap.offsetWidth; // 強制 reflow，確保 html2canvas 拿到更新後的 layout
 
     html2canvas(tempDiv, {
       backgroundColor: bgColor,
