@@ -1331,20 +1331,26 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // 明確遍歷每張表格取最大寬度，不依賴 wrap.offsetWidth 的計算
+    // 遍歷所有表格取最大寬度
     let naturalWidth = 0;
     wrap.querySelectorAll('.table-custom').forEach(t => {
       naturalWidth = Math.max(naturalWidth, t.offsetWidth);
     });
+
+    // 把每張表格包進固定寬度的 div，再讓表格 width:100% 填滿
+    // （直接對 table 設 width 在 html2canvas 下不可靠）
+    wrap.querySelectorAll('.table-custom').forEach(t => {
+      const tWrap = document.createElement('div');
+      tWrap.style.cssText = `width:${naturalWidth}px;overflow:hidden;`;
+      t.parentNode.insertBefore(tWrap, t);
+      tWrap.appendChild(t);
+      t.style.width = '100%';
+      t.style.minWidth = '0';
+    });
+
     wrap.style.width = naturalWidth + 'px';
     tempDiv.style.width = naturalWidth + 'px';
     tempDiv.style.whiteSpace = '';
-
-    // 強制每張表格等寬
-    wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width = naturalWidth + 'px';
-      t.style.minWidth = naturalWidth + 'px';
-    });
 
     html2canvas(tempDiv, {
       backgroundColor: bgColor,
