@@ -1331,13 +1331,16 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // offsetWidth 包含 border，是正確的總寬度
-    const naturalWidth = wrap.offsetWidth;
+    // 明確遍歷每張表格取最大寬度，不依賴 wrap.offsetWidth 的計算
+    let naturalWidth = 0;
+    wrap.querySelectorAll('.table-custom').forEach(t => {
+      naturalWidth = Math.max(naturalWidth, t.offsetWidth);
+    });
     wrap.style.width = naturalWidth + 'px';
     tempDiv.style.width = naturalWidth + 'px';
     tempDiv.style.whiteSpace = '';
 
-    // 直接用像素值強制每張表格等寬，避免百分比解析不穩定
+    // 強制每張表格等寬
     wrap.querySelectorAll('.table-custom').forEach(t => {
       t.style.width = naturalWidth + 'px';
       t.style.minWidth = naturalWidth + 'px';
