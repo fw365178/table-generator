@@ -1331,23 +1331,40 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // 遍歷所有表格取最大寬度（此時 wrap 仍為 inline-block、tables 為 auto）
+    // 遍歷所有表格取最大寬度
     let naturalWidth = 0;
     wrap.querySelectorAll('.table-custom').forEach(t => {
       naturalWidth = Math.max(naturalWidth, t.offsetWidth);
     });
 
-    // inline-block 的 % 解析在 html2canvas 下不穩定，改成 block 容器
-    wrap.style.display  = 'block';
-    wrap.style.width    = naturalWidth + 'px';
-    tempDiv.style.width = naturalWidth + 'px';
-    tempDiv.style.whiteSpace = '';
-
-    // 強制所有表格等寬（現在 100% = block 容器寬度，可靠）
+    // 對較窄的表格插入隱藏的 full-width 列，讓瀏覽器原生 table layout 撐開寬度
+    // 比任何 CSS width 方法都可靠
     wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width = '100%';
+      if (t.offsetWidth >= naturalWidth - 1) return;
+      // 計算最大欄數（考慮 colspan）
+      let maxCols = 1;
+      t.querySelectorAll('tr').forEach(row => {
+        let n = 0;
+        row.querySelectorAll('th, td').forEach(c => {
+          n += parseInt(c.getAttribute('colspan') || '1');
+        });
+        maxCols = Math.max(maxCols, n);
+      });
+      const fakeTr = document.createElement('tr');
+      fakeTr.style.cssText = 'height:0;line-height:0;font-size:0;';
+      const fakeTd = document.createElement('td');
+      fakeTd.setAttribute('colspan', maxCols);
+      fakeTd.style.cssText = `min-width:${naturalWidth}px;height:0;padding:0;border:none;line-height:0;font-size:0;`;
+      fakeTr.appendChild(fakeTd);
+      t.appendChild(fakeTr);
     });
-    void wrap.offsetWidth; // 強制 reflow，確保 html2canvas 拿到更新後的 layout
+
+    // 強制 reflow，取得最終寬度
+    void wrap.offsetWidth;
+    const finalWidth = wrap.offsetWidth;
+    wrap.style.width    = finalWidth + 'px';
+    tempDiv.style.width = finalWidth + 'px';
+    tempDiv.style.whiteSpace = '';
 
     html2canvas(tempDiv, {
       backgroundColor: bgColor,
