@@ -1275,7 +1275,7 @@
       t.style.width       = 'auto';
       t.style.tableLayout = 'auto';
       t.style.border      = 'none';
-      t.style.marginBottom = '0';
+      t.style.setProperty('margin-bottom', '0', 'important'); // 覆蓋 CSS !important
     });
 
     // ── textarea/input 轉換為 span（保留換行與樣式）——必須在量寬之前做 ──
