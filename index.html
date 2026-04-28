@@ -99,7 +99,7 @@
       border-collapse: collapse;
       font-family: 'Roboto', Arial, sans-serif;
       border: none;
-      margin-bottom: 10px !important;
+      margin-bottom: 10px;
       transition: border-color 0.3s;
     }
     .table-custom th, .table-custom td {
@@ -1277,7 +1277,7 @@
       t.style.width       = '100%';
       t.style.tableLayout = 'auto';
       t.style.border      = 'none';
-      t.style.setProperty('margin-bottom', '0', 'important');
+      t.style.marginBottom = '0';
     });
 
     // ── textarea/input 轉換為 span（保留換行與樣式）——必須在量寬之前做 ──
