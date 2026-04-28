@@ -1259,23 +1259,25 @@
 
     document.body.appendChild(tempDiv);
 
+    // 從 live DOM 量真實表格寬度（live 頁面所有表格已等寬 = 100% of container）
+    const liveTableWidth = (container.querySelector('.table-custom') || {offsetWidth: 600}).offsetWidth;
+
     // 複製表格（不含操作按鈕）
     // ── 先把所有 textarea 的 value 寫入 defaultValue，確保 cloneNode 能複製值 ──
     container.querySelectorAll('textarea').forEach(ta => { ta.defaultValue = ta.value; });
 
     const wrap = document.createElement('div');
+    wrap.style.cssText = `display:block;width:${liveTableWidth}px;overflow:hidden;`;
     container.querySelectorAll('.table-custom').forEach(t => wrap.appendChild(t.cloneNode(true)));
-    wrap.style.display  = 'inline-block';
-    wrap.style.overflow = 'hidden';  // 裁掉外圍 td border 超出的半條線
 
     tempDiv.appendChild(wrap);
 
-    // 讓表格寬度跟著內容自動調整
+    // 所有表格等寬填滿 wrap
     wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width       = 'auto';
+      t.style.width       = '100%';
       t.style.tableLayout = 'auto';
       t.style.border      = 'none';
-      t.style.setProperty('margin-bottom', '0', 'important'); // 覆蓋 CSS !important
+      t.style.setProperty('margin-bottom', '0', 'important');
     });
 
     // ── textarea/input 轉換為 span（保留換行與樣式）——必須在量寬之前做 ──
@@ -1331,39 +1333,7 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // 遍歷所有表格取最大寬度
-    let naturalWidth = 0;
-    wrap.querySelectorAll('.table-custom').forEach(t => {
-      naturalWidth = Math.max(naturalWidth, t.offsetWidth);
-    });
-
-    // 對較窄的表格插入隱藏的 full-width 列，讓瀏覽器原生 table layout 撐開寬度
-    // 比任何 CSS width 方法都可靠
-    wrap.querySelectorAll('.table-custom').forEach(t => {
-      if (t.offsetWidth >= naturalWidth - 1) return;
-      // 計算最大欄數（考慮 colspan）
-      let maxCols = 1;
-      t.querySelectorAll('tr').forEach(row => {
-        let n = 0;
-        row.querySelectorAll('th, td').forEach(c => {
-          n += parseInt(c.getAttribute('colspan') || '1');
-        });
-        maxCols = Math.max(maxCols, n);
-      });
-      const fakeTr = document.createElement('tr');
-      fakeTr.style.cssText = 'height:0;line-height:0;font-size:0;';
-      const fakeTd = document.createElement('td');
-      fakeTd.setAttribute('colspan', maxCols);
-      fakeTd.style.cssText = `min-width:${naturalWidth}px;height:0;padding:0;border:none;line-height:0;font-size:0;`;
-      fakeTr.appendChild(fakeTd);
-      t.appendChild(fakeTr);
-    });
-
-    // 強制 reflow，取得最終寬度
-    void wrap.offsetWidth;
-    const finalWidth = wrap.offsetWidth;
-    wrap.style.width    = finalWidth + 'px';
-    tempDiv.style.width = finalWidth + 'px';
+    tempDiv.style.width      = liveTableWidth + 'px';
     tempDiv.style.whiteSpace = '';
 
     html2canvas(tempDiv, {
