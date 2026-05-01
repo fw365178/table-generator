@@ -1298,7 +1298,7 @@
       span.style.textShadow = computed.textShadow;
       span.style.letterSpacing = computed.letterSpacing;
       span.style.textTransform = computed.textTransform;
-      span.style.whiteSpace = 'pre-line';
+      span.style.whiteSpace = 'pre';
       span.style.display    = 'inline-block';
       span.style.width      = '100%';
       span.style.textAlign  = 'center';
@@ -1320,7 +1320,7 @@
     // 強制每格樣式（pre-line 保留換行且允許自動換行；overflow visible 避免裁切）
     tempDiv.querySelectorAll('td, th').forEach(cell => {
       cell.style.padding    = '8px 12px';
-      cell.style.whiteSpace = 'pre-line';
+      cell.style.whiteSpace = 'pre';
       cell.style.overflow   = 'visible';
     });
 
