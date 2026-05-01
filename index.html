@@ -1272,11 +1272,11 @@
 
     tempDiv.appendChild(wrap);
 
-    // 所有表格等寬填滿 wrap
+    // 所有表格等寬填滿 wrap（auto 讓內容自然撐開，100% 填滿容器）
     wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width       = liveTableWidth + 'px';
-      t.style.tableLayout = 'fixed';
-      t.style.border      = 'none';
+      t.style.width        = '100%';
+      t.style.tableLayout  = 'auto';
+      t.style.border       = 'none';
       t.style.marginBottom = '0';
     });
 
@@ -1298,7 +1298,7 @@
       span.style.textShadow = computed.textShadow;
       span.style.letterSpacing = computed.letterSpacing;
       span.style.textTransform = computed.textTransform;
-      span.style.whiteSpace = 'pre-wrap';
+      span.style.whiteSpace = 'pre-line';
       span.style.display    = 'inline-block';
       span.style.width      = '100%';
       span.style.textAlign  = 'center';
@@ -1317,12 +1317,11 @@
     // 移除 del-row-td
     tempDiv.querySelectorAll('.del-row-td').forEach(el => el.remove());
 
-    // 強制每格樣式
+    // 強制每格樣式（pre-line 保留換行且允許自動換行；overflow visible 避免裁切）
     tempDiv.querySelectorAll('td, th').forEach(cell => {
       cell.style.padding    = '8px 12px';
-      cell.style.whiteSpace = 'pre-wrap';
-      cell.style.overflow   = 'hidden';
-      cell.style.wordBreak  = 'break-word';
+      cell.style.whiteSpace = 'pre-line';
+      cell.style.overflow   = 'visible';
     });
 
     // 移除空 td
@@ -1330,7 +1329,15 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    tempDiv.style.width      = liveTableWidth + 'px';
+    // 量出所有表格實際需要的最大寬度（含溢出），確保 canvas 不裁切右側
+    const actualW = Math.max(liveTableWidth, wrap.scrollWidth);
+    wrap.style.width         = actualW + 'px';
+    // 第二步：固定為 actualW，讓所有表格等寬
+    wrap.querySelectorAll('.table-custom').forEach(t => {
+      t.style.width       = actualW + 'px';
+      t.style.tableLayout = 'fixed';
+    });
+    tempDiv.style.width      = actualW + 'px';
     tempDiv.style.whiteSpace = '';
 
     html2canvas(tempDiv, {
