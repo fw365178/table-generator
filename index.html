@@ -1317,11 +1317,11 @@
     // 移除 del-row-td
     tempDiv.querySelectorAll('.del-row-td').forEach(el => el.remove());
 
-    // 強制每格樣式（pre-line 保留換行且允許自動換行；overflow visible 避免裁切）
+    // 強制每格樣式
     tempDiv.querySelectorAll('td, th').forEach(cell => {
       cell.style.padding    = '8px 12px';
       cell.style.whiteSpace = 'pre';
-      cell.style.overflow   = 'visible';
+      cell.style.overflow   = 'hidden';
     });
 
     // 移除空 td
@@ -1329,13 +1329,13 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // 量出所有表格實際需要的最大寬度（含溢出），確保 canvas 不裁切右側
+    // 量出 auto 排版下的自然寬度（確保所有欄位都容得下內容）
     const actualW = Math.max(liveTableWidth, wrap.scrollWidth);
-    wrap.style.width         = actualW + 'px';
-    // 第二步：固定為 actualW，讓所有表格等寬
+    // 用 auto 排版 + 明確寬度：瀏覽器按內容比例分配欄寬，所有表格等寬，文字不溢出
+    wrap.style.width = actualW + 'px';
     wrap.querySelectorAll('.table-custom').forEach(t => {
       t.style.width       = actualW + 'px';
-      t.style.tableLayout = 'fixed';
+      t.style.tableLayout = 'auto';
     });
     tempDiv.style.width      = actualW + 'px';
     tempDiv.style.whiteSpace = '';
