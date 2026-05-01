@@ -1259,22 +1259,20 @@
 
     document.body.appendChild(tempDiv);
 
-    // 從 live DOM 量真實表格寬度（live 頁面所有表格已等寬 = 100% of container）
-    const liveTableWidth = (container.querySelector('.table-custom') || {offsetWidth: 600}).offsetWidth;
-
     // 複製表格（不含操作按鈕）
     // ── 先把所有 textarea 的 value 寫入 defaultValue，確保 cloneNode 能複製值 ──
     container.querySelectorAll('textarea').forEach(ta => { ta.defaultValue = ta.value; });
 
     const wrap = document.createElement('div');
-    wrap.style.cssText = `display:block;width:${liveTableWidth}px;`;
+    // 給超大容器讓表格以內容自然撐開，量完再縮
+    wrap.style.cssText = `display:block;width:9999px;`;
     container.querySelectorAll('.table-custom').forEach(t => wrap.appendChild(t.cloneNode(true)));
 
     tempDiv.appendChild(wrap);
 
-    // 所有表格等寬填滿 wrap（auto 讓內容自然撐開，100% 填滿容器）
+    // 先讓表格以內容自然撐開，量完寬度後再統一
     wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width        = '100%';
+      t.style.width        = 'auto';
       t.style.tableLayout  = 'auto';
       t.style.border       = 'none';
       t.style.marginBottom = '0';
@@ -1329,15 +1327,15 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // 量出 auto 排版下的自然寬度（確保所有欄位都容得下內容）
-    const actualW = Math.max(liveTableWidth, wrap.scrollWidth);
-    // 用 auto 排版 + 明確寬度：瀏覽器按內容比例分配欄寬，所有表格等寬，文字不溢出
-    wrap.style.width = actualW + 'px';
-    wrap.querySelectorAll('.table-custom').forEach(t => {
-      t.style.width       = actualW + 'px';
+    // 量各表格自然寬度，取最大值 → 所有表格等寬且剛好容下內容
+    const tableElems = Array.from(wrap.querySelectorAll('.table-custom'));
+    const maxW = tableElems.reduce((m, t) => Math.max(m, t.scrollWidth), 0) || 400;
+    wrap.style.width = maxW + 'px';
+    tableElems.forEach(t => {
+      t.style.width       = maxW + 'px';
       t.style.tableLayout = 'auto';
     });
-    tempDiv.style.width      = actualW + 'px';
+    tempDiv.style.width      = maxW + 'px';
     tempDiv.style.whiteSpace = '';
 
     html2canvas(tempDiv, {
