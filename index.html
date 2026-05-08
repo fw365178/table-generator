@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -63,6 +64,38 @@
       --c-btn:        #fdb8e3;
       --c-accent:     #f246ff;
       --c-row-bg:     #ffe0f5;   /* 粉色版：淡粉底色 */
+    }
+
+    /* ── THEME: PURPLE (Theme 5) ── */
+    body.theme-purple {
+      --c-bg:         #5b007d;
+      --c-border:     #a200e0;
+      --c-outline:    #a200e0;
+      --c-border2:    #a200e0;
+      --c-hdr-bg:     #3a0050;
+      --c-hdr-fg:     #000000;
+      --c-cell-fg:    #3a0050;
+      --c-hl-color:   #ffea00;
+      --c-hl-shadow:  #3a0050;
+      --c-btn:        #a200e0;
+      --c-accent:     #a200e0;
+      --c-row-bg:     #f3d6ff;
+    }
+
+    /* ── THEME: DARK BLUE ORANGE (Theme 6) ── */
+    body.theme-darkblue {
+      --c-bg:         #151560;
+      --c-border:     #2020b4;
+      --c-outline:    #2020b4;
+      --c-border2:    #2020b4;
+      --c-hdr-bg:     #0a0a3a;
+      --c-hdr-fg:     #fe6d2c;
+      --c-cell-fg:    #0a0a3a;
+      --c-hl-color:   #fe6d2c;
+      --c-hl-shadow:  #0a0a3a;
+      --c-btn:        #2020b4;
+      --c-accent:     #2020b4;
+      --c-row-bg:     #d6d6ff;
     }
 
     h1 {
@@ -366,10 +399,83 @@
       downloadBg: '#fa9dd7',
       h3Color: '#fdb8e3',
       secondLabel: 'Tagalog Version',
+    },
+    theme5: {
+      label: '🇵🇭 Tagalog',
+      theme: 'purple',
+      themeClass: 'theme-purple',
+      accentColor: '#a200e0',
+      activeBg: '#a200e0',
+      activeColor: '#fff',
+      inactiveBg: 'rgba(255,255,255,0.18)',
+      inactiveColor: 'rgba(255,255,255,0.9)',
+      downloadBg: '#5b007d',
+      h3Color: '#a200e0',
+      secondLabel: 'Tagalog Version',
+    },
+    theme6: {
+      label: '🇵🇭 Tagalog',
+      theme: 'darkblue',
+      themeClass: 'theme-darkblue',
+      accentColor: '#2020b4',
+      activeBg: '#2020b4',
+      activeColor: '#fff',
+      inactiveBg: 'rgba(255,255,255,0.18)',
+      inactiveColor: 'rgba(255,255,255,0.9)',
+      downloadBg: '#151560',
+      h3Color: '#2020b4',
+      secondLabel: 'Tagalog Version',
     }
   };
 
-  let currentLang = 'nepali';
+  // 依 Excel 順序，每個語言有獨立英文欄
+  const GLOSSARY_ROWS = {
+    nepali: [
+      ["PROMOTION","प्रमोशन"],["GAME TYPES","खेल प्रकार"],["GAME","खेल"],
+      ["REPETITIONS","पुनरावृत्ति"],["BONUS %","बोनस %"],["BONUS","बोनस"],
+      ["MAX BONUS","अधिकतम बोनस"],["UNLIMITED","असीमित"],["TURNOVER","कारोबार"],
+      ["MIN DEPOSIT","न्यूनतम जम्मा"],["MAX WITHDRAWAL","अधिकतम निकासी"],
+      ["AMOUNT VOLUME %","रकम भोल्युम %"],
+      ["DAILY ONE-TIME","दैनिक एकपटक"],["ONE-TIME","एक पटक"],["DAILY","दैनिक"],
+      ["WEEKLY ONE-TIME","साप्ताहिक एकपटक"],["WEEKLY","साप्ताहिक"],
+      ["ALL GAMES","सबै खेलहरू"],
+      ["LIVE CASINO","जीवन क्यासिनो"],["SLOT","स्लट"],["CRASH GAME","दुर्घटना खेल"],
+      ["FISHING","माछा पकड़्नु"],["ESPORT","इ-स्पोर्ट"],["CARD GAME","कार्ड खेलहरू"],
+      ["SPORTS","खेलकुद"],["LOTTERY","लटरी"],["COCKFIGHT","चिडियाँ युद्ध"],
+      ["CRICKET","क्रिकेट"],["TABLE","टेबल खेल"],["ARCADE","आर्केड"],
+      ["SLOT & FISHING","स्लट र माछा पकड़्नु"],["AMOUNT","रकम"],
+    ],
+    bengali: [
+      ["PROMOTION","প্রচার"],["GAME TYPES","গেমের ধরন"],["GAME","গেম"],
+      ["REPETITIONS","পুনরাবৃত্তি"],["BONUS %","বোনাস %"],["BONUS","বোনাস"],
+      ["MAX BONUS","সর্বোচ্চ বোনাস"],["UNLIMITED","অসীম"],["TURNOVER","টার্নওভার"],
+      ["MIN DEPOSIT","সর্বনিম্ন জমা"],["MAX WITHDRAWAL","সর্বোচ্চ উত্তোলন"],
+      ["AMOUNT VOLUME %","পরিমাণ ভলিউম %"],
+      ["DAILY ONE-TIME","দৈনিক একবার"],["ONE-TIME","একবার"],["DAILY","দৈনিক"],
+      ["WEEKLY ONE-TIME","সাপ্তাহিক একবার"],["WEEKLY","সাপ্তাহিক"],
+      ["ALL GAMES","সমস্ত গেম"],
+      ["CASINO","ক্যাসিনো"],["SLOTS","স্লট"],["CRASH","ক্র্যাশ"],
+      ["FISHING","ফিশিং"],["ESPORT","ই-স্পোর্টস"],["CARD GAME","কার্ড গেম"],
+      ["SPORTS","স্পোর্ট"],["LOTTERY","লটারি"],["COCKFIGHT","মোরগ লড়াই"],
+      ["CRICKET","ক্রিকেট"],["TABLE","টেবিল"],["ARCADE","আর্কেড"],
+      ["SLOTS & FISHING","স্লট এবং ফিশিং"],["AMOUNT","পরিমাণ"],
+    ],
+    tagalog: [
+      ["PROMOTION","PROMOSYON"],["GAME TYPES","URI NG LARO"],["GAME","LARO"],
+      ["REPETITIONS","DALAS"],["BONUS %","BONUS %"],["BONUS","BONUS"],
+      ["MAX BONUS","MAXIMUM NA BONUS"],["UNLIMITED","WALANG LIMIT"],["TURNOVER","TURNOVER"],
+      ["MIN DEPOSIT","MINIMUM NA DEPOSITO"],["MAX WITHDRAWAL","MAXIMUM NA PWEDENG I-WITHDRAW"],
+      ["AMOUNT VOLUME %","HALAGA AT VOLUME %"],
+      ["DAILY ONE-TIME","ISANG BESES KADA ARAW"],["ONE-TIME","ISANG BESES"],["DAILY","ARAW-ARAW"],
+      ["WEEKLY ONE-TIME","LINGGUHANG ISANG BESES"],["WEEKLY","LINGGUHAN"],
+      ["ALL GAMES","LAHAT NG LARO"],
+      ["CASINO","CASINO"],["SLOTS","LARO NG SLOT"],["CRASH GAME","CRASH GAME"],
+      ["FISHING","LARONG PANGINGISDA"],["ESPORT","ESPORTS"],["CARD GAME","LARONG BARAHA"],
+      ["SPORTS","PALAKASAN"],["LOTTERY","LOTERYA"],["COCKFIGHT","SABONG"],
+      ["CRICKET","KRIKET"],["TABLE","TABLE"],["ARCADE","ARCADE"],
+      ["SLOT & FISHING","SLOT & PANGINGISDA"],["AMOUNT","HALAGA"],
+    ],
+  };
   let rowBgEnabled = false;  // 資料列底色開關（保留，未來可用）
   // ── cellBgData: key="{gi}-{ri}-{ci}", true = 格子套標題欄底色 ──
   let cellBgData = {};
@@ -384,11 +490,16 @@
       "MAX BONUS":"अधिकतम बोनस","UNLIMITED":"असीमित","TURNOVER":"कारोबार",
       "MIN DEPOSIT":"न्यूनतम जम्मा","MAX WITHDRAWAL":"अधिकतम निकासी",
       "AMOUNT VOLUME %":"रकम भोल्युम %","ONE-TIME ONLY":"एक पटक मात्र",
-      "ONE-TIME":"एक पटक","DAILY":"दैनिक","ALL GAMES":"सबै खेलहरू",
-      "LIVE CASINO":"जीवित क्यासिनो","SLOT":"स्लट","CRASH GAME":"क्र्यास खेल",
-      "FISHING":"फिसिङ","ESPORT":"ई-स्पोर्ट","CARD GAME":"कार्ड खेलहरू",
-      "SPORTS":"खेलकुद","LOTTERY":"लटरी","COCKFIGHT":"कुखुरा जुधाइ",
-      "SLOT & FISHING":"स्लट र फिसिङ","AMOUNT":"रकम",
+      "ONE-TIME":"एक पटक","DAILY":"दैनिक","DAILY ONE-TIME":"दैनिक एकपटक",
+      "WEEKLY":"साप्ताहिक","WEEKLY ONE-TIME":"साप्ताहिक एकपटक",
+      "ALL GAMES":"सबै खेलहरू",
+      "LIVE CASINO":"जीवन क्यासिनो","SLOT":"स्लट","SLOTS":"स्लट",
+      "CRASH GAME":"दुर्घटना खेल","CRASH":"दुर्घटना खेल",
+      "FISHING":"माछा पकड़्नु","ESPORT":"इ-स्पोर्ट","CARD GAME":"कार्ड खेलहरू",
+      "SPORTS":"खेलकुद","LOTTERY":"लटरी","COCKFIGHT":"चिडियाँ युद्ध",
+      "CRICKET":"क्रिकेट","TABLE":"टेबल खेल","ARCADE":"आर्केड",
+      "SLOT & FISHING":"स्लट र माछा पकड़्नु","SLOTS & FISHING":"स्लट र माछा पकड़्नु",
+      "CASINO":"क्यासिनो","AMOUNT":"रकम",
       "1X":"१X","100%":"१००%","5%":"५%","8%":"८%","12%":"१२%",
       "100 PHP":"रु१००","500 PHP":"रु५००","1000 PHP":"रु१,०००",
       "रु100":"रु१००","रु500":"रु५००","रु1,000":"रु१,०००",
@@ -400,29 +511,45 @@
       "MAX BONUS":"সর্বোচ্চ বোনাস","UNLIMITED":"অসীম","TURNOVER":"টার্নওভার",
       "MIN DEPOSIT":"সর্বনিম্ন জমা","MAX WITHDRAWAL":"সর্বোচ্চ উত্তোলন",
       "AMOUNT VOLUME %":"পরিমাণ ভলিউম %","ONE-TIME ONLY":"শুধুমাত্র একবার",
-      "ONE-TIME":"একবার","DAILY":"দৈনিক","ALL GAMES":"সমস্ত গেম",
-      "LIVE CASINO":"লাইভ ক্যাসিনো","SLOT":"স্লট","FISHING":"মাছ ধরা",
-      "SPORTS":"খেলাধুলা","LOTTERY":"লটারি","COCKFIGHT":"মোরগ লড়াই",
-      "SLOT & FISHING":"স্লট এবং মাছ ধরা","AMOUNT":"পরিমাণ",
+      "ONE-TIME":"একবার","DAILY":"দৈনিক","DAILY ONE-TIME":"দৈনিক একবার",
+      "WEEKLY":"সাপ্তাহিক","WEEKLY ONE-TIME":"সাপ্তাহিক একবার",
+      "ALL GAMES":"সমস্ত গেম",
+      "LIVE CASINO":"লাইভ ক্যাসিনো","CASINO":"ক্যাসিনো",
+      "SLOT":"স্লট","SLOTS":"স্লট",
+      "CRASH GAME":"ক্র্যাশ","CRASH":"ক্র্যাশ",
+      "FISHING":"ফিশিং","ESPORT":"ই-স্পোর্টস","CARD GAME":"কার্ড গেম",
+      "SPORTS":"স্পোর্ট","LOTTERY":"লটারি","COCKFIGHT":"মোরগ লড়াই",
+      "CRICKET":"ক্রিকেট","TABLE":"টেবিল","ARCADE":"আর্কেড",
+      "SLOT & FISHING":"স্লট এবং ফিশিং","SLOTS & FISHING":"স্লট এবং ফিশিং",
+      "AMOUNT":"পরিমাণ",
       "1X":"১X","100%":"১০০%","5%":"৫%","8%":"৮%","12%":"১২%",
       "100 PHP":"৳১০০","500 PHP":"৳৫০০","1000 PHP":"৳১০০০",
-      "রু100":"৳১০০","রু500":"৳৫০০","রু1,000":"৳১০০০",
-      "रु100":"৳১০০","रु500":"৳৫০০","रु1,000":"৳১০০০",
+      "রু100":"৳১০০","রু500":"৳৫০০","রু1,000":"৳১,০০০",
+      "रु100":"৳১০০","रु500":"৳৫০০","रु1,000":"৳১,০০০",
     },
     tagalog: {
-      "PROMOTION":"PROMOSYON","GAME TYPES":"URI NG MGA LARO","GAME":"LARO",
-      "REPETITIONS":"PAG-UULIT","BONUS %":"BONUS %","BONUS":"BONUS",
+      "PROMOTION":"PROMOSYON","GAME TYPES":"URI NG LARO","GAME":"LARO",
+      "REPETITIONS":"DALAS","BONUS %":"BONUS %","BONUS":"BONUS",
       "MAX BONUS":"MAXIMUM NA BONUS","UNLIMITED":"WALANG LIMIT","TURNOVER":"TURNOVER",
       "MIN DEPOSIT":"MINIMUM NA DEPOSITO","MAX WITHDRAWAL":"MAXIMUM NA PWEDENG I-WITHDRAW",
       "AMOUNT VOLUME %":"HALAGA AT VOLUME %","ONE-TIME ONLY":"ISANG BESES LAMANG",
-      "ONE-TIME":"ISANG BESES","DAILY":"ARAW-ARAW","ALL GAMES":"LAHAT NG LARO",
-      "LIVE CASINO":"LIVE CASINO","SLOT":"SLOT","FISHING":"PANGINGISDA",
-      "SPORTS":"PALAKASAN","LOTTERY":"LOTTERY","COCKFIGHT":"SABONG",
-      "SLOT & FISHING":"SLOT AT PANGINGISDA","AMOUNT":"HALAGA",
+      "ONE-TIME":"ISANG BESES","DAILY":"ARAW-ARAW","DAILY ONE-TIME":"ISANG BESES KADA ARAW",
+      "WEEKLY":"LINGGUHAN","WEEKLY ONE-TIME":"LINGGUHANG ISANG BESES",
+      "ALL GAMES":"LAHAT NG LARO",
+      "LIVE CASINO":"LIVE CASINO","CASINO":"CASINO",
+      "SLOT":"LARO NG SLOT","SLOTS":"LARO NG SLOT",
+      "CRASH GAME":"CRASH GAME","CRASH":"CRASH GAME",
+      "FISHING":"LARONG PANGINGISDA","ESPORT":"ESPORTS","CARD GAME":"LARONG BARAHA",
+      "SPORTS":"PALAKASAN","LOTTERY":"LOTERYA","COCKFIGHT":"SABONG",
+      "CRICKET":"KRIKET","TABLE":"TABLE","ARCADE":"ARCADE",
+      "SLOT & FISHING":"SLOT & PANGINGISDA","SLOTS & FISHING":"SLOT & PANGINGISDA",
+      "AMOUNT":"HALAGA",
       "1X":"1X","100%":"100%","5%":"5%","8%":"8%","12%":"12%",
-      "100 PHP":"100 PHP","500 PHP":"500 PHP","1000 PHP":"1000 PHP",
-      "रु100":"100 PHP","रु500":"500 PHP","रु1,000":"1000 PHP",
-    }
+      "100 PHP":"100 PHP","500 PHP":"500 PHP","1,000 PHP":"1,000 PHP",
+      "रु100":"100 PHP","रु500":"500 PHP","रु1,000":"1,000 PHP",
+    },
+    theme5: null,
+    theme6: null
   };
 
   const DIGIT_MAP = {
@@ -474,10 +601,15 @@
   }
 
   function translate(text) {
-    const map = TRANSLATIONS[currentLang];
+    const lang = (currentLang === 'theme5' || currentLang === 'theme6') ? 'tagalog' : currentLang;
+    const map = TRANSLATIONS[lang];
     if (!map) return text;
     // 完整字串對照優先
     if (map[text] !== undefined) return map[text];
+    // theme5/theme6/tagalog：रु 轉 PHP
+    if (currentLang === 'theme5' || currentLang === 'theme6' || currentLang === 'tagalog') {
+      return String(text).replace(/रु([\d,]+)/g, (_, num) => formatNumberStr(num, 'western') + ' PHP');
+    }
     // 否則逐字將阿拉伯數字轉成對應文字數字
     if (currentLang === 'nepali' || currentLang === 'bengali') {
       let result = String(text);
@@ -485,12 +617,10 @@
       if (currentLang === 'bengali') {
         result = result.replace(/रु/g, '৳');
       }
-      // 對數字部分套用印度式千分位（貨幣符號後面的數字，或純數字）
-      // 匹配：可選符號前綴 + 數字（含已有逗號）
-      // 孟加拉用西式千分位，尼泊爾用印度式千分位
+      // 對數字部分套用千分位（匹配連續數字含已有逗號，整體重新格式化）
       const sepStyle = (currentLang === 'bengali') ? 'western' : 'indian';
-      result = result.replace(/([^\d,]?)([\d,]+)/g, (match, prefix, numPart) => {
-        return prefix + formatNumberStr(numPart, sepStyle);
+      result = result.replace(/([\d,]+)/g, (match) => {
+        return formatNumberStr(match, sepStyle);
       });
       return convertDigits(result, currentLang);
     }
@@ -506,7 +636,7 @@
     if (currentLang === 'bengali') {
       return s.replace(/रु([\d,]+)/g, (_, num) => '৳' + formatNumberStr(num, 'western'));
     }
-    if (currentLang === 'tagalog') {
+    if (currentLang === 'tagalog' || currentLang === 'theme5' || currentLang === 'theme6') {
       return s.replace(/रु([\d,]+)/g, (_, num) => formatNumberStr(num, 'western') + ' PHP');
     }
     // nepali (或其他)：只加千分位，保留 रु
@@ -520,7 +650,7 @@
       // ৳10,000 → रु10,000
       return String(text).replace(/৳([\d,]+)/g, (_, num) => 'रु' + formatNumberStr(num, 'western'));
     }
-    if (currentLang === 'tagalog') {
+    if (currentLang === 'tagalog' || currentLang === 'theme5' || currentLang === 'theme6') {
       return String(text).replace(/([\d,]+)\s*PHP/g, 'रु$1');
     }
     return text;
@@ -605,6 +735,8 @@
       nepali:  { bg: '#3531a8', text: '#fff' },
       bengali: { bg: '#22a085', text: '#fff' },
       tagalog: { bg: '#f246ff', text: '#fff' },
+      theme5:  { bg: '#a200e0', text: '#fff' },
+      theme6:  { bg: '#2020b4', text: '#fff' },
     };
 
     Object.entries(LANG_CONFIG).forEach(([key, cfg]) => {
@@ -760,8 +892,8 @@
     panel.style.top=top+'px'; panel.style.left=left+'px';
 
     panel.querySelector('#sp-apply').onclick=()=>{
-      const cs=Math.max(1,Math.min(parseInt(panel.querySelector('#sp-cs').value)||1,10));
-      const rs=Math.max(1,Math.min(parseInt(panel.querySelector('#sp-rs').value)||1,10));
+      const cs=Math.max(1,parseInt(panel.querySelector('#sp-cs').value)||1);
+      const rs=Math.max(1,parseInt(panel.querySelector('#sp-rs').value)||1);
       panel.remove(); applySpan(gi,type,ri,ci,cs,rs);
     };
     panel.querySelector('#sp-cancel-span').onclick=()=>{ panel.remove(); applySpan(gi,type,ri,ci,1,1); };
@@ -782,6 +914,79 @@
   }
 
   // ══════════════════════════════════════════════════════════
+  //  GLOSSARY PANEL
+  // ══════════════════════════════════════════════════════════
+  function showGlossaryPanel() {
+    const existing = document.getElementById('glossary-panel');
+    if (existing) { existing.remove(); return; }
+
+    const cfg = LANG_CONFIG[currentLang];
+    const baseLang = (currentLang === 'theme5' || currentLang === 'theme6') ? 'tagalog' : currentLang;
+    const rows = GLOSSARY_ROWS[baseLang] || [];
+    const langLabel = { nepali:'🇳🇵 尼泊爾文', bengali:'🇧🇩 孟加拉文', tagalog:'🇵🇭 菲律賓文' }[baseLang] || cfg.secondLabel;
+
+    const overlay = createElement('div', {
+      id: 'glossary-panel',
+      style: 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;'
+    });
+
+    const box = createElement('div', {
+      style: `background:#fff;border-radius:12px;padding:20px;max-width:520px;width:95%;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,0.35);border-top:5px solid ${cfg.accentColor};`
+    });
+
+    // title bar
+    const titleBar = createElement('div', { style: 'display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;' });
+    titleBar.appendChild(createElement('h2', { style: `margin:0;font-size:17px;color:${cfg.accentColor};` }, `📋 詞條對照 — ${cfg.label}`));
+    titleBar.appendChild(createElement('button', {
+      onclick: () => overlay.remove(),
+      style: 'background:#ddd;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;line-height:1;'
+    }, '✕'));
+    box.appendChild(titleBar);
+    box.appendChild(createElement('p', { style: 'font-size:11px;color:#aaa;margin:0 0 10px;' }, '點擊任意格子即可複製'));
+
+    const tbl = createElement('table', { style: 'width:100%;border-collapse:collapse;font-size:13px;' });
+
+    // header
+    const thead = createElement('thead');
+    const hrow = createElement('tr');
+    ['英文', langLabel].forEach((h, i) => {
+      const th = createElement('th', {
+        style: `padding:8px 12px;background:${cfg.accentColor};color:#222;text-align:center;border:1px solid #ddd;font-weight:700;`
+      }, h);
+      hrow.appendChild(th);
+    });
+    thead.appendChild(hrow);
+    tbl.appendChild(thead);
+
+    const tbody = createElement('tbody');
+    tbody.innerHTML = rows.map(([eng, trans], idx) => {
+      const bg = idx % 2 === 0 ? '#f7f7f7' : '#ffffff';
+      const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return `<tr style="background:${bg}">
+        <td style="padding:7px 12px;border:1px solid #e0e0e0;text-align:center;cursor:pointer;user-select:none;color:#222;" data-val="${esc(eng)}">${esc(eng)}</td>
+        <td style="padding:7px 12px;border:1px solid #e0e0e0;text-align:center;cursor:pointer;user-select:none;color:#222;" data-val="${esc(trans)}">${esc(trans)}</td>
+      </tr>`;
+    }).join('');
+    // attach click handlers
+    tbody.querySelectorAll('td').forEach(td => {
+      td.addEventListener('click', () => copyText(td.dataset.val, td));
+    });
+    tbl.appendChild(tbody);
+    box.appendChild(tbl);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  }
+
+  function copyText(text, el) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = el.style.background;
+      el.style.background = '#a8e6cf';
+      setTimeout(() => { el.style.background = orig; }, 600);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════
   //  RENDER PREVIEW
   // ══════════════════════════════════════════════════════════
   function renderPreview() {
@@ -793,10 +998,16 @@
 
     // ── Top controls ──
     const ctrlRow=createElement('div',{style:'display:flex;justify-content:space-between;width:100%;margin-bottom:5px;align-items:center;'});
-    ctrlRow.appendChild(createElement('button',{
+    const leftBtns=createElement('div',{style:'display:flex;gap:6px;align-items:center;'});
+    leftBtns.appendChild(createElement('button',{
       onclick:resetToDefault,
       style:`padding:3px 8px;font-size:12px;background:${cfg.accentColor};`
     },'🔄 Reset Default'));
+    leftBtns.appendChild(createElement('button',{
+      onclick:()=>showGlossaryPanel(),
+      style:`padding:3px 8px;font-size:12px;background:#6c3483;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:600;`
+    },'📋 詞條'));
+    ctrlRow.appendChild(leftBtns);
     ctrlRow.appendChild(createElement('button',{
       id:'download-btn',onclick:()=>downloadTableAsJPG(),
       style:'padding:6px 15px;font-size:16px;background:#e74c3c;border-radius:6px;font-weight:bold;box-shadow:0 2px 5px rgba(0,0,0,0.2);cursor:pointer;'
@@ -1216,8 +1427,9 @@
     const eng=document.getElementById('english-container');
     const sec=document.getElementById('secondary-container');
     if (!eng||!sec) return alert("Container not found.");
+    const secName = (currentLang === 'theme5' || currentLang === 'theme6') ? 'tagalog' : currentLang;
     processAndDownload(eng,'table-english.jpg',()=>
-      processAndDownload(sec,`table-${currentLang}.jpg`)
+      processAndDownload(sec,`table-${secName}.jpg`)
     );
   }
 
@@ -1317,9 +1529,20 @@
 
     // 強制每格樣式
     tempDiv.querySelectorAll('td, th').forEach(cell => {
-      cell.style.padding    = '8px 25px';
+      cell.style.padding    = '8px 1em';
       cell.style.whiteSpace = 'pre';
-      cell.style.overflow   = 'hidden';
+      cell.style.overflow   = 'visible';
+      cell.style.textAlign  = 'center';
+      cell.style.verticalAlign = 'middle';
+    });
+
+    // span 也強制置中
+    tempDiv.querySelectorAll('td span, th span').forEach(span => {
+      span.style.display   = 'block';
+      span.style.textAlign = 'center';
+      span.style.width     = '100%';
+      span.style.paddingLeft  = '0.5em';
+      span.style.paddingRight = '0.5em';
     });
 
     // 移除空 td
@@ -1327,8 +1550,9 @@
       if (!td.textContent.trim() && td.children.length === 0) td.remove();
     });
 
-    // 量各表格自然寬度，取最大值 → 所有表格等寬且剛好容下內容
+    // 量各表格自然寬度，取最大值 → 所有表格等寬且剛好容下內容（含 padding）
     const tableElems = Array.from(wrap.querySelectorAll('.table-custom'));
+    void tempDiv.offsetWidth;
     const maxW = tableElems.reduce((m, t) => Math.max(m, t.scrollWidth), 0) || 400;
     wrap.style.width = maxW + 'px';
     tableElems.forEach(t => {
